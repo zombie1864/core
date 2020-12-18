@@ -25,7 +25,7 @@ let construct_table = data => {
     $.each(data, (rowIndex, r) => {
         let row = $('<tr/>');
         $.each(r, (colIndex, c) => { 
-            row.append($('<t'+(rowIndex == 0 ?  'h' : 'd')+'/>').text(c));
+            row.append($('<t'+(rowIndex == 0 ?  'h' : 'd')+'/>').text(c).attr('contenteditable', true));
         });
         table.append(row);
     });
