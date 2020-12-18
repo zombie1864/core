@@ -11,16 +11,17 @@ let form = () => {
 }
 
 let data = [
-    ['col_1', 'col_2', 'col_3'], 
-    ['data', 'data', 'data'], 
-    ['data', 'data', 'data'], 
-    ['data', 'data', 'data']
+    {'col_1':'data', 'col_2':'data', "col_3":'data'},
+    {'col_1':'data', 'col_2':'data', "col_3":'data'}, 
+    {'col_1':'data', 'col_2':'data', "col_3":'data'}
 ]
 
 let construct_table = data => {
     data = data || null
-    if (data === null ) console.log('no data');
     let table = $('<table/>');
+    if (data === null ) {
+        table.append('<p>No data<p>')
+    };
     $.each(data, (rowIndex, r) => {
         let row = $('<tr/>');
         $.each(r, (colIndex, c) => { 
@@ -44,7 +45,7 @@ let pageLayout = () => {
 
 $("document").ready(function() {  
     appLayout = pageLayout()  
-    dataTable = construct_table(); 
+    dataTable = construct_table(data); 
     formCol = form(); 
 }); 
     
