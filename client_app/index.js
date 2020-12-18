@@ -23,7 +23,7 @@ let onclick = () => {
 
 let construct_table = data => {
     data = data || null
-    let table = $('<table/>');
+    let table = $('<table id="tableId"/>');
     let idValue = 0; 
     if (data === null ) {
         table.append('<p>No data<p>')
@@ -32,22 +32,17 @@ let construct_table = data => {
             let row = $('<tr/>');
             $.each(r, (colIndex, c) => { 
                 row.append(
-                    $('<t'+(rowIndex == 0 ?  `h id='${idValue}' class="dataEl"` : `d id='${idValue}' class="dataEl"`)+'/>').text(c) 
+                    $('<t'+(rowIndex == 0 ?  `h class='${idValue}' id="dataEl"` : `d class='${idValue}' id="dataEl"`)+'/>').text(c) 
                 );
-                console.log(idValue);
                 idValue++
             });
             table.append(row);
         });
     }
     $('.table').append(table)
-    $('.dataEl').on('click', onClick)
-    // $('.1').on('click', onClick)
-}
-let onClick = () => {
-    // console.log(classId);
-    console.log('clicked');
-    // $('.dataEl').css('background-color', 'yellow');
+    $('#tableId').on('click', event => {
+        $(event.target).css('background-color', 'yellow'); 
+    });
 }
 
 let pageLayout = () => {
