@@ -1,5 +1,5 @@
 let form = () => {
-    const form = $('<form/>'); 
+    const form = $('<form id="form"/>'); 
     const label = $('<label/>'); 
     const formLabels = ['name', 'age', 'gender', 'email', 'feedback']
 
@@ -7,8 +7,19 @@ let form = () => {
         formLabel = label.textContent = formLabels[idx]
         form.append(label, formLabel, '<input required>', '<br>','<br>')
     })
-    form.append('<input class="submit" type="submit" value="Add">')
-    $('.form').append(form)
+    $('.form').append(form).append(add).append(edit).append(remove)
+}
+
+let add = () => {
+    $('#form').append('<input class="submit" type="submit" value="Add">')
+}
+
+let edit = () => {
+    $('#form').append('<input type="submit" value="Edit">')
+}
+
+let remove = () => {
+    $('#form').append('<input type="submit" value="Delete">')
 }
 
 let data = [
@@ -16,10 +27,6 @@ let data = [
     {'col_1':'data', 'col_2':'data', "col_3":'data'}, 
     {'col_1':'data', 'col_2':'data', "col_3":'data'}
 ]
-
-let onclick = () => {
-    console.log('clicked');
-}
 
 let construct_table = data => {
     data = data || null
@@ -40,9 +47,11 @@ let construct_table = data => {
         });
     }
     $('.table').append(table)
-    $('#tableId').on('click', event => {
-        $(event.target).css('background-color', 'yellow'); 
-    });
+    $('#tableId').on('click', dataSelector);
+}
+
+let dataSelector = event => {
+    $(event.target).css('background-color', 'yellow'); 
 }
 
 let pageLayout = () => {
