@@ -1,13 +1,13 @@
 let form = () => {
-    let form = $('<form/>'); 
-    let label = $('<label/>'); 
-    let formLabels = ['name', 'age', 'gender', 'email']
+    const form = $('<form/>'); 
+    const label = $('<label/>'); 
+    const formLabels = ['name', 'age', 'gender', 'email']
     
     $.each(formLabels, (idx, formLabel) => {
         formLabel = label.textContent = formLabels[idx]
         form.append(label, formLabel, '<input>', '<br>')
     })
-    $(document.body).append(form)
+    $('.form').append(form)
 }
 
 let data = [
@@ -16,7 +16,10 @@ let data = [
     ['data', 'data', 'data'], 
     ['data', 'data', 'data']
 ]
-let const_construct_table = data => {
+
+let construct_table = data => {
+    data = data || null
+    if (data === null ) console.log('no data');
     let table = $('<table/>');
     $.each(data, (rowIndex, r) => {
         let row = $('<tr/>');
@@ -25,10 +28,23 @@ let const_construct_table = data => {
         });
         table.append(row);
     });
-    $(document.body).append(table)
+    $('.table').append(table)
 }
-$("document").ready(function() {    
-    dataTable = const_construct_table(data); 
+
+let pageLayout = () => {
+    $('.id').append('<table id="layoutTable" border="2"/>')
+    const parent = document.getElementById('layoutTable')
+    const thread = document.createElement('thread'); // could not use $('tag') see why later
+    const th1 = document.createElement('th');// could not use $('tag') see why later
+    th1.className='form';
+    const th2 = document.createElement('th');// could not use $('tag') see why later
+    th2.className='table';
+    parent.append(thread,th1,th2)
+}
+
+$("document").ready(function() {  
+    appLayout = pageLayout()  
+    dataTable = construct_table(); 
     formCol = form(); 
 }); 
     
