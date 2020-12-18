@@ -5,7 +5,7 @@ let form = () => {
 
     $.each(formLabels, (idx, formLabel) => {
         formLabel = label.textContent = formLabels[idx]
-        form.append(label, formLabel, '<input class="must">', '<br>','<br>')
+        form.append(label, formLabel, '<input required>', '<br>','<br>')
     })
     form.append('<input class="submit" type="submit" value="Add">')
     $('.form').append(form)
@@ -60,6 +60,5 @@ $("document").ready(function() {
     appLayout = pageLayout()  
     dataTable = construct_table(data); 
     formCol = form()
-    $('.must').validate(); 
 }); 
     
