@@ -15,9 +15,10 @@ class Schema:
             id INTEGER PRIMARY KEY, 
             Name TEXT, 
             Age INTEGER, 
-            Gender boolean DEFAULT 0, 
             Email TEXT, 
-            Feedback TEXT
+            Feedback TEXT,
+            Gender INTEGER DEFAULT 0,
+            _is_deleted INTEGER DEFAULT 0 
         );
         """
 
@@ -25,7 +26,7 @@ class Schema:
 
 
 class AttrModel:
-    TABLENAME = 'ATTR'
+    TABLENAME = 'Attributes'
 
     def __init__(self):
         self.conn = sqlite3.connect('back_end.db')
@@ -44,7 +45,7 @@ class AttrModel:
         # TABLENAME = "ATTR"
         query = f'insert into {self.TABLENAME} ' \
                 f'(Name, Age, Gender, Email,Feedback) ' \
-                f'values ("{params.get("Name")}","{params.get("Age")}"), ("{params.get("Gender")}"), ("{params.get("Email")}"), ("{params.get("Feedback")}")'
+                f'values ("{params.get("Name")}","{params.get("Age")}", "{params.get("Gender")}", "{params.get("Email")}", "{params.get("Feedback")}")'
         result = self.conn.execute(query)
         return self.get_by_id(result.lastrowid)
 
@@ -69,7 +70,7 @@ class AttrModel:
         return self.get_by_id(item_id)
 
     def list_items(self, where_clause=""):
-        query = f"SELECT id, Name, Age, Gendor, Email, Feedback " \
+        query = f"SELECT id, Name, Age, Gender, Email, Feedback " \
                 f"from {self.TABLENAME} WHERE _is_deleted != {1} " + where_clause
         print (query)
         result_set = self.conn.execute(query).fetchall()
