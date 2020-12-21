@@ -1,5 +1,6 @@
 import json
 from models import Schema
+from flask_cors import CORS
 from service import AttrService
 from flask import Flask, request, jsonify    
 
