@@ -1,27 +1,24 @@
-let form = () => {
+const form = () => {
     const form = $('<form id="form"/>'); 
     const label = $('<label/>'); 
     const formLabels = ['name', 'age', 'gender', 'email', 'feedback']
+    const labelBtns = [
+        '<input type="submit" value="Add"/>',
+        '<input type="submit" value="Edit"/>',
+        '<input type="submit" value="Delete"/>'
+    ]
 
     $.each(formLabels, (idx, formLabel) => {
         formLabel = label.textContent = formLabels[idx]
         form.append(label, formLabel, '<input required>', '<br>','<br>')
     })
-    $('.form').append(form).append(add).append(edit).append(remove)
+    $('.form').append(form)
+    $.each(labelBtns, (idx, labelBtn) => {
+        $('.form').append(labelBtn)
+    })
 }
 
-$(function () {
-    $.ajax({
-        type:'GET', 
-        url:'/attr',
-        success: function(data) {
-            console.log('success',data);
-        }
-    })
-})
-
-let add = () => {
-    $('#form').append('<input class="submit" type="submit" value="Add">')
+let addEventHandler = () => {
     return $.ajax({
         method: 'POST', 
         url: '/attr',
@@ -31,47 +28,44 @@ let add = () => {
     })
 }
 
-let edit = () => {
-    $('#form').append('<input type="submit" value="Edit">')
+let editEventHandler = () => {
 }
 
-let remove = () => {
-    $('#form').append('<input type="submit" value="Delete">')
+let removeEventHandler = () => {
 }
 
-// let data = [
-//     {'Name':'data', 'Age':'data', 'Gender':'data', 'Email':'date', 'Feedback':'data'},
-//     {'Name':'data', 'Age':'data', 'Gender':'data', 'Email':'date', 'Feedback':'data'}, 
-//     {'Name':'data', 'Age':'data', 'Gender':'data', 'Email':'date', 'Feedback':'data'}
-// ]
-
-let construct_table = data => {
-    data = data || null
+const construct_table = () => {
     let table = $('<table id="tableId"/>');
     let idValue = 0; 
-    if (data === null ) {
-        table.append('<p>No data<p>')
-    } else {
-        $.each(data, (rowIndex, r) => {
-            let row = $('<tr/>');
-            $.each(r, (colIndex, c) => { 
-                row.append(
-                    $('<t'+(rowIndex == 0 ?  `h class='${idValue}' id="dataEl"` : `d class='${idValue}' id="dataEl"`)+'/>').text(c) 
-                );
-                idValue++
-            });
-            table.append(row);
-        });
-    }
+    $( () => {
+        $.ajax({
+            type: 'GET', 
+            url: 'http://127.0.0.1:5000/attr', 
+            success: data => {
+                data = data || null
+                if (data === null ) {table.append('<p>No data<p>')}
+                    $.each(data, (rowIndex, r) => {
+                        let row = $('<tr/>');
+                        $.each(r, (colIndex, c) => { 
+                            row.append(
+                                $('<t'+(rowIndex == 0 ?  `h class='${idValue}' id="dataEl"` : `d class='${idValue}' id="dataEl"`)+'/>').text(c) 
+                            );
+                            idValue++
+                        });
+                        table.append(row);
+                    });
+                }
+            })
+        })
     $('.table').append(table)
     $('#tableId').on('click', dataSelector);
 }
 
-let dataSelector = event => {
+const dataSelector = event => {
     $(event.target).css('background-color', 'yellow'); 
 }
 
-let pageLayout = () => {
+const pageLayout = () => {
     $('.id').append('<table id="layoutTable" border="2"/>')
     const parent = document.getElementById('layoutTable')
     const thread = document.createElement('thread'); // could not use $('tag') see why later
