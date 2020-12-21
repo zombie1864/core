@@ -10,8 +10,25 @@ let form = () => {
     $('.form').append(form).append(add).append(edit).append(remove)
 }
 
+$(function () {
+    $.ajax({
+        type:'GET', 
+        url:'/attr',
+        success: function(data) {
+            console.log('success',data);
+        }
+    })
+})
+
 let add = () => {
     $('#form').append('<input class="submit" type="submit" value="Add">')
+    return $.ajax({
+        method: 'POST', 
+        url: '/attr',
+        data: data, // correct this part later
+        processData: false,
+        contentType: false
+    })
 }
 
 let edit = () => {
@@ -22,11 +39,11 @@ let remove = () => {
     $('#form').append('<input type="submit" value="Delete">')
 }
 
-let data = [
-    {'col_1':'data', 'col_2':'data', "col_3":'data'},
-    {'col_1':'data', 'col_2':'data', "col_3":'data'}, 
-    {'col_1':'data', 'col_2':'data', "col_3":'data'}
-]
+// let data = [
+//     {'Name':'data', 'Age':'data', 'Gender':'data', 'Email':'date', 'Feedback':'data'},
+//     {'Name':'data', 'Age':'data', 'Gender':'data', 'Email':'date', 'Feedback':'data'}, 
+//     {'Name':'data', 'Age':'data', 'Gender':'data', 'Email':'date', 'Feedback':'data'}
+// ]
 
 let construct_table = data => {
     data = data || null
@@ -67,7 +84,7 @@ let pageLayout = () => {
 
 $("document").ready(function() {  
     appLayout = pageLayout()  
-    dataTable = construct_table(data); 
+    dataTable = construct_table(); 
     formCol = form()
 }); 
     
