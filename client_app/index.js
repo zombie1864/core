@@ -23,27 +23,19 @@ const form = () => {
 
 const addEventHandler = event => {
     event.preventDefault(); 
-    const $name = $('#name'); // select id by name 
-    const $age = $('#age'); 
-    const $gender = $('#gender'); 
-    const $email = $('#email'); 
-    const $feedback = $('#feedback'); 
     const dataSent = {
-        "Name":$name.val(), 
-        "Age":$age.val(), 
-        "Gender":$gender.val(), 
-        "Email":$email.val(), 
-        "Feedback":$feedback.val()
+        "Name":$('#name').val(), 
+        "Age":$('#age').val(), 
+        "Gender":$('#gender').val(), 
+        "Email":$('#email').val(), 
+        "Feedback":$('#feedback').val()
     }
     $.ajax({
         type: 'POST', 
         url: 'http://127.0.0.1:5000/attr',  
         data: dataSent, 
-        processData: false,
-        contentType: false,
         success: () => {
             console.log('dataSent is now in db');
-            // console.log(dataSent);
         },
     })
 }
@@ -53,23 +45,36 @@ let dataID = null
 const idSelector = event => {
     idValue = $(event.target).attr('class')
     dataID = idValue
-    console.log(dataID);
+    console.log(dataID)
+    $.ajax({
+        type: 'GET', 
+        url: 'http://127.0.0.1:5000/attr',
+        success: data => {
+            objectLength = Object.keys(data[dataID -1]).length
+            console.log(objectLength);
+            dataValuesArray = Object.values(data[dataID -1])
+            console.log(dataValuesArray);
+            $('#name').val(dataValuesArray[4])
+            $('#age').val(dataValuesArray[0])
+            $('#gender').val(dataValuesArray[3])
+            $('#email').val(dataValuesArray[1])
+            $('#feedback').val(dataValuesArray[2])
+        }
+    })
 }
 
 const editEventHandler = () => {
-    // console.log(dataID);
+    console.log(dataID);
     // The following is for testing purposes
     $.ajax({
         type: 'PUT', 
-        url: `http://127.0.0.1:5000/attr/${idValue}`, 
-        dataType: 'json', 
+        url: `http://127.0.0.1:5000/attr/${dataID}`, 
         data: {
             "Name": 'Tiff', 
             "Age": '27', 
             "Gender": '1', 
             "Email":'Tiff@gmail.com', 
             "Feedback":'Hi!',
-            "id":`${idValue}`
         },
         success: () => {
             console.log('Hacked!');

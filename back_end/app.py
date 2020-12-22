@@ -1,15 +1,16 @@
 import json
 from models import Schema
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from service import AttrService
-from flask import Flask, request, jsonify    
+from requests import get
+from flask import Flask, request, jsonify, make_response   
 
 app = Flask(__name__)  
 
 @app.after_request
 def add_headers(response):
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Headers'] =  "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With"
+    response.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1:5500'
+    response.headers['Access-Control-Allow-Headers'] =  "Content-Type:application/json, Access-Control-Allow-Headers, Authorization, X-Requested-With"
     response.headers['Access-Control-Allow-Methods']=  "POST, GET, PUT, DELETE, OPTIONS"
     return response
 
@@ -19,7 +20,7 @@ def list_attr():
 
 @app.route("/attr", methods=["POST"])
 def create_attr():
-    data = request.get_json()
+    data = request.form.to_dict()
     return jsonify(AttrService().create(data))
 
 @app.route("/attr/<item_id>", methods=['PUT'])
