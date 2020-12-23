@@ -10,7 +10,7 @@ const form = () => {
 
     $.each(formLabels, (idx, formLabel) => {
         formLabel = label.textContent = formLabels[idx]
-        form.append(label, formLabel, `<input id="${formLabel}"required>`, '<br>','<br>')
+        form.append(label, formLabel, `<input id="${formLabel}">`, '<br>','<br>')
     })
     $('.form').append(form)
     $.each(labelBtns, (idx, labelBtn) => {
@@ -22,6 +22,7 @@ const form = () => {
 }
 
 const addEventHandler = event => {
+    // console.log("i'm first");
     event.preventDefault(); 
     const dataSent = {
         "Name":$('#name').val(), 
@@ -30,14 +31,27 @@ const addEventHandler = event => {
         "Email":$('#email').val(), 
         "Feedback":$('#feedback').val()
     }
-    $.ajax({
-        type: 'POST', 
-        url: 'http://127.0.0.1:5000/attr',  
-        data: dataSent, 
-        success: () => {
-            console.log('dataSent is now in db');
-        },
-    })
+    if (formValidation()) {
+        $.ajax({
+            type: 'POST', 
+            url: 'http://127.0.0.1:5000/attr',  
+            data: dataSent, 
+            success: () => {
+                console.log('dataSent is now in db');
+            },
+        })
+    }
+}
+
+const formValidation = () => {
+    if ($('#name').val() !== null) {
+        console.log(`you have entered text ${$('#name').val()}`); 
+        let hasNumber = /\d/g
+        if(hasNumber.test($('#name').val())){        
+            alert ('Please input only characters for your name')
+            return false
+        };
+    }
 }
 
 let dataID = null 
@@ -118,32 +132,30 @@ const construct_table = () => {
     $('.table').append(table)
     $('#tableId').on('click', idSelector);
     $('#tableId').on('click', dataSelector);
+    
 }
 
-const dataSelector = event => { 
-    // let $idValue = $(this);
-    // let idValue = $(event.target).attr('class')
-    // let rowIndex = idValue - 1;
-    // let selected = $(`#${rowIndex}`).css('background-color', 'yellow');
-    // if (!$idValue.data('clicked')) {
-    //     selected = selected; 
-    // } else {
-    //     selected = $(`#${rowIndex}`).css('opacity', '0.0');
-    //     idValue = $(event.target).attr('class')
-    //     rowIndex = idValue - 1;
-    //     let newSelected = $(`#${rowIndex}`).css('background-color', 'red');
-    //     newSelected = newSelected
-    // }
-    // $idValue.data('clicked', true);
+const dataSelector = event => { // COME BACK TO THIS LATER 
+    // EFFECTIVLY TRYING TO TOGGLE BACKGROUND BETWEEN CLICKS 
 
     let idValue = $(event.target).attr('class')
-    console.log(idValue);
+    console.log('cliked');
     let rowIndex = idValue - 1;
-    console.log(rowIndex);
-    let index = document.getElementById('#tableId')
-    if (typeof index !== 'undefined') { $(`#${rowIndex}`).toggle("selected").css('background-color', 'red');}
-    index = this.rowIndex; 
-    $(`#${rowIndex}`).toggle("selected").css('background-color', 'red');
+    // console.log(rowIndex);
+    $(`#${rowIndex}`).css('background-color', 'red');
+    // $(`#${rowIndex}`).toggle("selected").css('background-color', 'red');
+    // $(`#${rowIndex}`).toggle("selected").css('background-color', 'red');
+    $('#tableId').on('click', dataSelector2);
+}
+const dataSelector2 = event => { 
+    let idValue = $(event.target).attr('class')
+    console.log('clicked another');
+    let rowIndex = idValue - 1;
+    // console.log(rowIndex);
+     $(`#${rowIndex}`).css('background-color', 'yellow');
+    // $(`#${rowIndex}`).toggle("selected").css('background-color', 'yellow');
+    $('#tableId').on('click', dataSelector);
+
 }
 
 const pageLayout = () => {
