@@ -34,17 +34,14 @@ const addEventHandler = event => {
         $.ajax({
             type: 'POST', 
             url: 'http://127.0.0.1:5000/attr',  
-            data: dataSent, 
-            success: () => {
-                console.log('dataSent is now in db');
-            },
+            data: dataSent
         })
     }
 } // end of func 
 
 const formValidation = () => {
-    let hasNumber = /\d/g
     if ($('#name').val() !== null) { // validation for name 
+        let hasNumber = /\d/ // checks if str has num 
         if(hasNumber.test($('#name').val())){        
             alert ('Please input only characters for your name')
             return false;
@@ -52,15 +49,17 @@ const formValidation = () => {
     }
 
     if ($('#age').val() !== null ) {
-        if (!hasNumber.test($('#age').val())) { // validation for age 
+        let onlyNumbers = /^[0-9]+$/ 
+        if (!onlyNumbers.test($('#age').val())) { // validation for age 
             alert ('Please input only numbers for your age');
             return false;
         }
     }
 
     if ($('#gender').val() !== null ) { // validation for gender
-        if (!hasNumber.test($('#age').val())) {
-            alert ('Please input 0 if you are male, 1 if you are female'); 
+        let onlyNumbers = /^[0-1]+$/
+        if ( !onlyNumbers.test($('#gender').val())) {
+            alert ('Please input 0 if you are male, 1 if you are female');
             return false; 
         }
     }
