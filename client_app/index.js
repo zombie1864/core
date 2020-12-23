@@ -101,7 +101,7 @@ const construct_table = () => {
                 data = data || null
                 if (data === null ) {table.append('<p>No data<p>')}
                 $.each(data, (rowIndex, r) => {
-                        let row = $(`<tr class='${rowIndex}'/>`);
+                        let row = $(`<tr id='${rowIndex}'/>`);
                         // console.log(rowIndex);
                         $.each(r, (colIndex, c) => { 
                             row.append(
@@ -118,16 +118,32 @@ const construct_table = () => {
     $('.table').append(table)
     $('#tableId').on('click', idSelector);
     $('#tableId').on('click', dataSelector);
-    // $('.2').on('click', dataSelector);
 }
 
-const dataSelector = event => { // SOMETHING LIKE THIS BUT KEEP WORKING ON IT 
-    idValue = $(event.target).attr('class')
+const dataSelector = event => { 
+    // let $idValue = $(this);
+    // let idValue = $(event.target).attr('class')
+    // let rowIndex = idValue - 1;
+    // let selected = $(`#${rowIndex}`).css('background-color', 'yellow');
+    // if (!$idValue.data('clicked')) {
+    //     selected = selected; 
+    // } else {
+    //     selected = $(`#${rowIndex}`).css('opacity', '0.0');
+    //     idValue = $(event.target).attr('class')
+    //     rowIndex = idValue - 1;
+    //     let newSelected = $(`#${rowIndex}`).css('background-color', 'red');
+    //     newSelected = newSelected
+    // }
+    // $idValue.data('clicked', true);
+
+    let idValue = $(event.target).attr('class')
     console.log(idValue);
-    rowIndex = idValue - 1
-    // $(event.target).css('background-color', 'yellow'); 
+    let rowIndex = idValue - 1;
     console.log(rowIndex);
-    $(`.${rowIndex}`).css('background-color', 'yellow');
+    let index = document.getElementById('#tableId')
+    if (typeof index !== 'undefined') { $(`#${rowIndex}`).toggle("selected").css('background-color', 'red');}
+    index = this.rowIndex; 
+    $(`#${rowIndex}`).toggle("selected").css('background-color', 'red');
 }
 
 const pageLayout = () => {
