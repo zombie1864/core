@@ -25,7 +25,7 @@ def create_attr():
 
 @app.route("/attr/<item_id>", methods=['PUT'])
 def update_item(item_id):
-    data = request.get_json()
+    data = request.form.to_dict()
     return jsonify(AttrService().update(item_id, data))
 
 @app.route("/attr/<item_id>", methods=['DELETE'])

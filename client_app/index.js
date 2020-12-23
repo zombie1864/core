@@ -41,19 +41,20 @@ const addEventHandler = event => {
 }
 
 let dataID = null 
+let rowIndex = null
 
 const idSelector = event => {
     idValue = $(event.target).attr('class')
     dataID = idValue
-    console.log(dataID)
+    // console.log(dataID)
     $.ajax({
         type: 'GET', 
         url: 'http://127.0.0.1:5000/attr',
         success: data => {
             objectLength = Object.keys(data[dataID -1]).length
-            console.log(objectLength);
+            // console.log(objectLength);
             dataValuesArray = Object.values(data[dataID -1])
-            console.log(dataValuesArray);
+            // console.log(dataValuesArray);
             $('#name').val(dataValuesArray[4])
             $('#age').val(dataValuesArray[0])
             $('#gender').val(dataValuesArray[3])
@@ -65,19 +66,22 @@ const idSelector = event => {
 
 const editEventHandler = () => {
     console.log(dataID);
+    const dataSent4Update = {
+        "Name":$('#name').val(), 
+        "Age":$('#age').val(), 
+        "Gender":$('#gender').val(), 
+        "Email":$('#email').val(), 
+        "Feedback":$('#feedback').val()
+    }
+    // console.log(dataSent4Update);
+    dataSent4Update
     // The following is for testing purposes
     $.ajax({
         type: 'PUT', 
         url: `http://127.0.0.1:5000/attr/${dataID}`, 
-        data: {
-            "Name": 'Tiff', 
-            "Age": '27', 
-            "Gender": '1', 
-            "Email":'Tiff@gmail.com', 
-            "Feedback":'Hi!',
-        },
+        data: dataSent4Update,
         success: () => {
-            console.log('Hacked!');
+            console.log('Updated!');
         }
     })
 }
@@ -93,28 +97,37 @@ const construct_table = () => {
             url: 'http://127.0.0.1:5000/attr', 
             success: data => {
                 let idValue = 1;
+                let rowID = 1; 
                 data = data || null
                 if (data === null ) {table.append('<p>No data<p>')}
                 $.each(data, (rowIndex, r) => {
-                        let row = $('<tr/>');
+                        let row = $(`<tr class='${rowIndex}'/>`);
+                        // console.log(rowIndex);
                         $.each(r, (colIndex, c) => { 
                             row.append(
-                                $('<t'+(rowIndex == 0 ?  `h class='${idValue}' id="dataEl"` : `d class='${idValue}' id="dataEl"`)+'/>').text(c) 
+                                $('<t'+(rowIndex == 0 ?  `h class='${idValue}'` : `d class='${idValue}' `)+'/>').text(c) 
                                 );
                             });
                         idValue++
+                        rowID++
                         table.append(row);
                     });
                 }
             })
         })
     $('.table').append(table)
-    $('#tableId').on('click', dataSelector);
     $('#tableId').on('click', idSelector);
+    $('#tableId').on('click', dataSelector);
+    // $('.2').on('click', dataSelector);
 }
 
-const dataSelector = event => {
-    $(event.target).css('background-color', 'yellow'); 
+const dataSelector = event => { // SOMETHING LIKE THIS BUT KEEP WORKING ON IT 
+    idValue = $(event.target).attr('class')
+    console.log(idValue);
+    rowIndex = idValue - 1
+    // $(event.target).css('background-color', 'yellow'); 
+    console.log(rowIndex);
+    $(`.${rowIndex}`).css('background-color', 'yellow');
 }
 
 const pageLayout = () => {
