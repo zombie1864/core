@@ -1,4 +1,4 @@
-const form = () => {
+const form = () => { 
     const form = $('<form/>'); 
     const label = $('<label/>'); 
     const formLabels = ['name', 'age', 'gender', 'email', 'feedback']
@@ -19,19 +19,18 @@ const form = () => {
     $('#Add').on('click', addEventHandler)
     $('#Edit').on('click', editEventHandler);
     
-}
+} // end of func 
 
 const addEventHandler = event => {
-    // console.log("i'm first");
     event.preventDefault(); 
-    const dataSent = {
+    const dataSent = { // data to be transmitted with post HTTP req 
         "Name":$('#name').val(), 
         "Age":$('#age').val(), 
         "Gender":$('#gender').val(), 
         "Email":$('#email').val(), 
         "Feedback":$('#feedback').val()
     }
-    if (formValidation()) {
+    if (formValidation()) { // validates the form before requesting API 
         $.ajax({
             type: 'POST', 
             url: 'http://127.0.0.1:5000/attr',  
@@ -41,17 +40,39 @@ const addEventHandler = event => {
             },
         })
     }
-}
+} // end of func 
 
 const formValidation = () => {
-    if ($('#name').val() !== null) {
-        console.log(`you have entered text ${$('#name').val()}`); 
-        let hasNumber = /\d/g
+    let hasNumber = /\d/g
+    if ($('#name').val() !== null) { // validation for name 
         if(hasNumber.test($('#name').val())){        
             alert ('Please input only characters for your name')
-            return false
+            return false;
         };
     }
+
+    if ($('#age').val() !== null ) {
+        if (!hasNumber.test($('#age').val())) { // validation for age 
+            alert ('Please input only numbers for your age');
+            return false;
+        }
+    }
+
+    if ($('#gender').val() !== null ) { // validation for gender
+        if (!hasNumber.test($('#age').val())) {
+            alert ('Please input 0 if you are male, 1 if you are female'); 
+            return false; 
+        }
+    }
+
+    if ($('#email').val() !== null) { // validation for email 
+        if ($('#email').val().indexOf('@') === -1 || $('#email').val().indexOf('.com') == -1) {
+            alert ('Please input valid email address')
+            return false 
+        }
+    }
+
+    return true 
 }
 
 let dataID = null 
@@ -76,7 +97,7 @@ const idSelector = event => {
             $('#feedback').val(dataValuesArray[2])
         }
     })
-}
+} // end of func 
 
 const editEventHandler = () => {
     console.log(dataID);
@@ -98,7 +119,7 @@ const editEventHandler = () => {
             console.log('Updated!');
         }
     })
-}
+} // end of func 
 
 const removeEventHandler = () => {
 }
@@ -133,7 +154,7 @@ const construct_table = () => {
     $('#tableId').on('click', idSelector);
     $('#tableId').on('click', dataSelector);
     
-}
+} // end of func 
 
 const dataSelector = event => { // COME BACK TO THIS LATER 
     // EFFECTIVLY TRYING TO TOGGLE BACKGROUND BETWEEN CLICKS 
@@ -167,7 +188,7 @@ const pageLayout = () => {
     const th2 = document.createElement('th');// could not use $('tag') see why later
     th2.className='table';
     parent.append(thread,th1,th2)
-}
+} // end of func 
 
 $("document").ready(function() {  
     appLayout = pageLayout()  
