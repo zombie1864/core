@@ -1,6 +1,6 @@
-import sqlite3 
+import sqlite3
 
-class Schema: 
+class Schema:
     def __init__(self):
         self.conn = sqlite3.connect('back_end.db')
         self.create_attr_table()
@@ -12,13 +12,13 @@ class Schema:
     def create_attr_table(self):
         query = """
         CREATE TABLE IF NOT EXISTS "Attributes" (
-            id INTEGER PRIMARY KEY, 
-            Name TEXT, 
-            Age INTEGER, 
-            Email TEXT, 
+            id INTEGER PRIMARY KEY,
+            Name TEXT,
+            Age INTEGER,
+            Email TEXT,
             Feedback TEXT,
             Gender INTEGER DEFAULT 0,
-            _is_deleted INTEGER DEFAULT 0 
+            _is_deleted INTEGER DEFAULT 0
         );
         """
 
@@ -61,7 +61,7 @@ class AttrModel:
 
     def update(self, item_id, update_dict):
         # TABLENAME = "ATTR"
-        set_query = ", ".join([f'{column} = {value}'
+        set_query = ", ".join([f'{column} = "{value}"'
                      for column, value in update_dict.items()])
         query = f"UPDATE {self.TABLENAME} " \
                 f"SET {set_query} " \
