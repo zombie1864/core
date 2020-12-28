@@ -5,7 +5,7 @@ const form = () => {
     const labelBtns = [
         '<input type="submit" value="Add" id="Add"/>',
         '<input type="submit" value="Edit" id="Edit"/>',
-        '<input type="submit" value="Delete"/>'
+        '<input type="submit" value="Delete" id="Delete"/>'
     ]
 
     $.each(formLabels, (idx, formLabel) => {
@@ -16,8 +16,9 @@ const form = () => {
     $.each(labelBtns, (idx, labelBtn) => {
         $('.form').append(labelBtn)
     })
-    $('#Add').on('click', addEventHandler)
+    $('#Add').on('click', addEventHandler);
     $('#Edit').on('click', editEventHandler);
+    $('#Delete').on('click', deleteEventHandler);
     
 } // end of func 
 
@@ -57,7 +58,7 @@ const formValidation = () => {
     }
 
     if ($('#gender').val() !== null ) { // validation for gender
-        let onlyNumbers = /^[0-1]+$/
+        let onlyNumbers = /^[0-1]$/
         if ( !onlyNumbers.test($('#gender').val())) {
             alert ('Please input 0 if you are male, 1 if you are female');
             return false; 
@@ -75,9 +76,10 @@ const formValidation = () => {
 }
 
 let dataID = null 
+let dataIDFromDB = null 
 let rowIndex = null
 
-const idSelector = event => {
+const idSelector = event => { //ISSUE not selecting the id from db 
     idValue = $(event.target).attr('class')
     dataID = idValue
     // console.log(dataID)
@@ -85,9 +87,13 @@ const idSelector = event => {
         type: 'GET', 
         url: 'http://127.0.0.1:5000/attr',
         success: data => {
-            objectLength = Object.keys(data[dataID -1]).length
-            // console.log(objectLength);
+            console.log(dataID);
+            console.log(data);
+            console.log(Object.values(data[dataID -1]));
             dataValuesArray = Object.values(data[dataID -1])
+            objectLength = Object.keys(data[dataID -1]).length
+            dataIDFromDB = dataValuesArray[5]
+            // console.log(objectLength);
             // console.log(dataValuesArray);
             $('#name').val(dataValuesArray[4])
             $('#age').val(dataValuesArray[0])
@@ -112,7 +118,7 @@ const editEventHandler = () => {
     // The following is for testing purposes
     $.ajax({
         type: 'PUT', 
-        url: `http://127.0.0.1:5000/attr/${dataID}`, 
+        url: `http://127.0.0.1:5000/attr/${dataIDFromDB}`, 
         data: dataSent4Update,
         success: () => {
             console.log('Updated!');
@@ -120,7 +126,11 @@ const editEventHandler = () => {
     })
 } // end of func 
 
-const removeEventHandler = () => {
+const deleteEventHandler = () => {
+    $.ajax({
+        type: 'DELETE', 
+        url: `http://127.0.0.1:5000/attr/${dataIDFromDB}`
+    })
 }
 
 const construct_table = () => {
@@ -132,8 +142,7 @@ const construct_table = () => {
             success: data => {
                 let idValue = 1;
                 let rowID = 1; 
-                data = data || null
-                if (data === null ) {table.append('<p>No data<p>')}
+                if (data.length === 0 ) {table.append('<p>No data<p>')}
                 $.each(data, (rowIndex, r) => {
                         let row = $(`<tr id='${rowIndex}'/>`);
                         // console.log(rowIndex);
@@ -159,7 +168,6 @@ const dataSelector = event => { // COME BACK TO THIS LATER
     // EFFECTIVLY TRYING TO TOGGLE BACKGROUND BETWEEN CLICKS 
 
     let idValue = $(event.target).attr('class')
-    console.log('cliked');
     let rowIndex = idValue - 1;
     // console.log(rowIndex);
     $(`#${rowIndex}`).css('background-color', 'red');
