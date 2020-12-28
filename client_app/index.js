@@ -9,7 +9,7 @@ const form = () => {
     ]
 
     $.each(formLabels, (idx, formLabel) => { // generates the fields for the forms 
-        formLabel = label.textContent = formLabels[idx]
+        formLabel = label.textContent = formLabels[idx] // gives the labels name in dynamic fashion 
         form.append(label, formLabel, `<input id="${formLabel}">`, '<br>','<br>')
     })
     $('.form').append(form) // appends Add, Edit, delete btn to form 
