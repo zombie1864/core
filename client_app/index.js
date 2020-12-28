@@ -146,30 +146,30 @@ const construct_table = () => {
         })
     $('.table').append(table)
     $('#tableId').on('click', rowSelector4Editing); // selects row data from table to populate on form 
-    $('#tableId').on('click', dataSelector);
+    $('#tableId').on('click', rowSelectionHighlight);
     
 } // end of func 
 
-const dataSelector = event => { // COME BACK TO THIS LATER 
-    // EFFECTIVLY TRYING TO TOGGLE BACKGROUND BETWEEN CLICKS 
+let currRowToggle = null
+let prevRowToggle = null 
 
+const rowSelectionHighlight = event => {
+    let idValue = $(event.target).attr('class') // gives the idValue of currTarget 
+    let rowIndex = idValue - 1; 
+    currRowToggle = $(`#${rowIndex}`) 
+    if (currRowToggle !== null && prevRowToggle === null ) {
+        currRowToggle.css('background-color', 'yellow');
+    } else if (currRowToggle !== null && prevRowToggle !== null) {
+        prevRowToggle.css('background-color', '')
+    } 
+    $('#tableId').on('click', prevRowToggle = $(`#${rowIndex}`), nxtRowSelectionHighlight);
+} // end of func 
+
+const nxtRowSelectionHighlight = event => { 
     let idValue = $(event.target).attr('class')
     let rowIndex = idValue - 1;
-    $(`#${rowIndex}`).css('background-color', 'red');
-    // $(`#${rowIndex}`).toggle("selected").css('background-color', 'red');
-    // $(`#${rowIndex}`).toggle("selected").css('background-color', 'red');
-    $('#tableId').on('click', dataSelector2);
-}
-const dataSelector2 = event => { 
-    let idValue = $(event.target).attr('class')
-    console.log('clicked another');
-    let rowIndex = idValue - 1;
-    // console.log(rowIndex);
      $(`#${rowIndex}`).css('background-color', 'yellow');
-    // $(`#${rowIndex}`).toggle("selected").css('background-color', 'yellow');
-    $('#tableId').on('click', dataSelector);
-
-}
+} // end of func 
 
 const pageLayout = () => {
     $('.id').append('<table id="layoutTable" border="2"/>')
