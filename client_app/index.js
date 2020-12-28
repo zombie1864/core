@@ -8,11 +8,11 @@ const form = () => {
         '<input type="submit" value="Delete" id="Delete"/>'
     ]
 
-    $.each(formLabels, (idx, formLabel) => {
+    $.each(formLabels, (idx, formLabel) => { // generates the fields for the forms 
         formLabel = label.textContent = formLabels[idx]
         form.append(label, formLabel, `<input id="${formLabel}">`, '<br>','<br>')
     })
-    $('.form').append(form)
+    $('.form').append(form) // appends Add, Edit, delete btn to form 
     $.each(labelBtns, (idx, labelBtn) => {
         $('.form').append(labelBtn)
     })
@@ -43,7 +43,7 @@ const addEventHandler = event => {
 const formValidation = () => {
     if ($('#name').val() !== null) { // validation for name 
         let hasNumber = /\d/ // checks if str has num 
-        if(hasNumber.test($('#name').val())){        
+        if(hasNumber.test($('#name').val())){ // test method used for testing validations     
             alert ('Please input only characters for your name')
             return false;
         };
