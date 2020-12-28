@@ -73,39 +73,32 @@ const formValidation = () => {
     }
 
     return true 
-}
+} // end of func 
 
-let dataID = null 
-let dataIDFromDB = null 
-let rowIndex = null
+let rowID = null // each row on table has an ID
+let dataIDFromDB = null // the ID stored in db to each obj entry in db 
+let rowIndex = null // used for CSS dataSelector
 
-const idSelector = event => { //ISSUE not selecting the id from db 
-    idValue = $(event.target).attr('class')
-    dataID = idValue
-    // console.log(dataID)
+const rowSelector4Editing = event => {  
+    let idValue = $(event.target).attr('class') //gets idValue from class attr 
+    rowID = idValue 
     $.ajax({
         type: 'GET', 
         url: 'http://127.0.0.1:5000/attr',
         success: data => {
-            console.log(dataID);
-            console.log(data);
-            console.log(Object.values(data[dataID -1]));
-            dataValuesArray = Object.values(data[dataID -1])
-            objectLength = Object.keys(data[dataID -1]).length
+            let idx = rowID -1; // starts idx at 0 rather than 1 
+            dataValuesArray = Object.values(data[ idx ]) // selects values for any data[ idx ] into arr
             dataIDFromDB = dataValuesArray[5]
-            // console.log(objectLength);
-            // console.log(dataValuesArray);
-            $('#name').val(dataValuesArray[4])
-            $('#age').val(dataValuesArray[0])
-            $('#gender').val(dataValuesArray[3])
-            $('#email').val(dataValuesArray[1])
-            $('#feedback').val(dataValuesArray[2])
+            $('#name').val(dataValuesArray[4]) // fill in dataValue to form entry
+            $('#age').val(dataValuesArray[0]) // fill in dataValue to form entry
+            $('#gender').val(dataValuesArray[3]) // fill in dataValue to form entry
+            $('#email').val(dataValuesArray[1]) // fill in dataValue to form entry
+            $('#feedback').val(dataValuesArray[2]) // fill in dataValue to form entry
         }
     })
 } // end of func 
 
 const editEventHandler = () => {
-    console.log(dataID);
     const dataSent4Update = {
         "Name":$('#name').val(), 
         "Age":$('#age').val(), 
@@ -113,16 +106,10 @@ const editEventHandler = () => {
         "Email":$('#email').val(), 
         "Feedback":$('#feedback').val()
     }
-    // console.log(dataSent4Update);
-    dataSent4Update
-    // The following is for testing purposes
     $.ajax({
         type: 'PUT', 
         url: `http://127.0.0.1:5000/attr/${dataIDFromDB}`, 
-        data: dataSent4Update,
-        success: () => {
-            console.log('Updated!');
-        }
+        data: dataSent4Update
     })
 } // end of func 
 
@@ -131,7 +118,7 @@ const deleteEventHandler = () => {
         type: 'DELETE', 
         url: `http://127.0.0.1:5000/attr/${dataIDFromDB}`
     })
-}
+} // end of func 
 
 const construct_table = () => {
     let table = $('<table id="tableId"/>');
@@ -145,7 +132,6 @@ const construct_table = () => {
                 if (data.length === 0 ) {table.append('<p>No data<p>')}
                 $.each(data, (rowIndex, r) => {
                         let row = $(`<tr id='${rowIndex}'/>`);
-                        // console.log(rowIndex);
                         $.each(r, (colIndex, c) => { 
                             row.append(
                                 $('<t'+(rowIndex == 0 ?  `h class='${idValue}'` : `d class='${idValue}' `)+'/>').text(c) 
@@ -159,7 +145,7 @@ const construct_table = () => {
             })
         })
     $('.table').append(table)
-    $('#tableId').on('click', idSelector);
+    $('#tableId').on('click', rowSelector4Editing); // selects row data from table to populate on form 
     $('#tableId').on('click', dataSelector);
     
 } // end of func 
@@ -169,7 +155,6 @@ const dataSelector = event => { // COME BACK TO THIS LATER
 
     let idValue = $(event.target).attr('class')
     let rowIndex = idValue - 1;
-    // console.log(rowIndex);
     $(`#${rowIndex}`).css('background-color', 'red');
     // $(`#${rowIndex}`).toggle("selected").css('background-color', 'red');
     // $(`#${rowIndex}`).toggle("selected").css('background-color', 'red');
