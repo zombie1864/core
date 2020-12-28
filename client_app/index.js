@@ -9,8 +9,8 @@ const form = () => {
     ]
 
     $.each(formLabels, (idx, formLabel) => { // generates the fields for the forms 
-        formLabel = label.textContent = formLabels[idx] // gives the labels name in dynamic fashion 
-        form.append(label, formLabel, `<input id="${formLabel}">`, '<br>','<br>')
+        formLabel = formLabels[idx] // gives the labels name in dynamic fashion 
+        form.append(formLabel, `<input id="${formLabel}">`, '<br>','<br>')
     })
     $('.form').append(form) // appends Add, Edit, delete btn to form 
     $.each(labelBtns, (idx, labelBtn) => {
@@ -22,20 +22,22 @@ const form = () => {
     
 } // end of func 
 
-const addEventHandler = event => {
-    event.preventDefault(); 
-    const dataSent = { // data to be transmitted with post HTTP req 
-        "Name":$('#name').val(), 
-        "Age":$('#age').val(), 
-        "Gender":$('#gender').val(), 
-        "Email":$('#email').val(), 
-        "Feedback":$('#feedback').val()
-    }
+const addEventHandler = () => {
     if (formValidation()) { // validates the form before requesting API 
+        const dataSent = { // data to be transmitted with post HTTP req 
+            "Name":$('#name').val(), 
+            "Age":$('#age').val(), 
+            "Gender":$('#gender').val(), 
+            "Email":$('#email').val(), 
+            "Feedback":$('#feedback').val()
+        }
         $.ajax({
             type: 'POST', 
             url: 'http://127.0.0.1:5000/attr',  
-            data: dataSent
+            data: dataSent, 
+            error: () => {
+                alert('Something went wrong')
+            }
         })
     }
 } // end of func 
@@ -44,8 +46,10 @@ const formValidation = () => {
     if ($('#name').val() !== null) { // validation for name 
         let hasNumber = /\d/ // checks if str has num 
         if(hasNumber.test($('#name').val())){ // test method used for testing validations     
-            alert ('Please input only characters for your name')
-            return false;
+            $('#layoutTable').append('<tr>','TEST') // WORK ON THIS HERE 
+            alert('Please input characters for your name')
+            console.log('invalid name');
+            return false; // used for boolean value for validation before post API req 
         };
     }
 
@@ -53,7 +57,7 @@ const formValidation = () => {
         let onlyNumbers = /^[0-9]+$/ 
         if (!onlyNumbers.test($('#age').val())) { // validation for age 
             alert ('Please input only numbers for your age');
-            return false;
+            return false; // used for boolean value for validation before post API req 
         }
     }
 
@@ -61,41 +65,18 @@ const formValidation = () => {
         let onlyNumbers = /^[0-1]$/
         if ( !onlyNumbers.test($('#gender').val())) {
             alert ('Please input 0 if you are male, 1 if you are female');
-            return false; 
+            return false; // used for boolean value for validation before post API req 
         }
     }
 
     if ($('#email').val() !== null) { // validation for email 
         if ($('#email').val().indexOf('@') === -1 || $('#email').val().indexOf('.com') == -1) {
             alert ('Please input valid email address')
-            return false 
+            return false; // used for boolean value for validation before post API req 
         }
     }
 
-    return true 
-} // end of func 
-
-let rowID = null // each row on table has an ID
-let dataIDFromDB = null // the ID stored in db to each obj entry in db 
-let rowIndex = null // used for CSS dataSelector
-
-const rowSelector4Editing = event => {  
-    let idValue = $(event.target).attr('class') //gets idValue from class attr 
-    rowID = idValue 
-    $.ajax({
-        type: 'GET', 
-        url: 'http://127.0.0.1:5000/attr',
-        success: data => {
-            let idx = rowID -1; // starts idx at 0 rather than 1 
-            dataValuesArray = Object.values(data[ idx ]) // selects values for any data[ idx ] into arr
-            dataIDFromDB = dataValuesArray[5]
-            $('#name').val(dataValuesArray[4]) // fill in dataValue to form entry
-            $('#age').val(dataValuesArray[0]) // fill in dataValue to form entry
-            $('#gender').val(dataValuesArray[3]) // fill in dataValue to form entry
-            $('#email').val(dataValuesArray[1]) // fill in dataValue to form entry
-            $('#feedback').val(dataValuesArray[2]) // fill in dataValue to form entry
-        }
-    })
+    return true; // used for boolean value for validation before post API req 
 } // end of func 
 
 const editEventHandler = () => {
@@ -109,14 +90,20 @@ const editEventHandler = () => {
     $.ajax({
         type: 'PUT', 
         url: `http://127.0.0.1:5000/attr/${dataIDFromDB}`, 
-        data: dataSent4Update
+        data: dataSent4Update, 
+        error: () => {
+            alert('Something went wrong')
+        }
     })
 } // end of func 
 
 const deleteEventHandler = () => {
     $.ajax({
         type: 'DELETE', 
-        url: `http://127.0.0.1:5000/attr/${dataIDFromDB}`
+        url: `http://127.0.0.1:5000/attr/${dataIDFromDB}`, 
+        error: () => {
+            alert('Something went wrong')
+        }
     })
 } // end of func 
 
@@ -146,40 +133,61 @@ const construct_table = () => {
         })
     $('.table').append(table)
     $('#tableId').on('click', rowSelector4Editing); // selects row data from table to populate on form 
-    $('#tableId').on('click', rowSelectionHighlight);
+    $('#tableId').on('click', rowSelectionHighlight); // highlights the row 
     
 } // end of func 
 
+let rowID = null // each row on table has an ID
+let dataIDFromDB = null // the ID stored in db to each obj entry in db 
+
+const rowSelector4Editing = event => {  
+    let idValue = $(event.target).attr('class') //gets idValue from class attr 
+    rowID = idValue 
+    $.ajax({
+        type: 'GET', 
+        url: 'http://127.0.0.1:5000/attr',
+        success: data => {
+            let idx = rowID -1; // starts idx at 0 rather than 1 
+            dataValuesArray = Object.values(data[ idx ]) // selects values for any data[ idx ] into arr
+            dataIDFromDB = dataValuesArray[5] // assigns var to id value from db globally 
+            $('#name').val(dataValuesArray[4]) // fill in dataValue to form entry
+            $('#age').val(dataValuesArray[0]) // fill in dataValue to form entry
+            $('#gender').val(dataValuesArray[3]) // fill in dataValue to form entry
+            $('#email').val(dataValuesArray[1]) // fill in dataValue to form entry
+            $('#feedback').val(dataValuesArray[2]) // fill in dataValue to form entry
+        }
+    })
+} // end of func 
+
 let currRowToggle = null
-let prevRowToggle = null 
+let prevRowToggle = null
 
 const rowSelectionHighlight = event => {
     let idValue = $(event.target).attr('class') // gives the idValue of currTarget 
-    let rowIndex = idValue - 1; 
-    currRowToggle = $(`#${rowIndex}`) 
+    let rowIndex = idValue - 1; // starts rowIndex at 0 rather than 1 
+    currRowToggle = $(`#${rowIndex}`) // current rowIndex from []
     if (currRowToggle !== null && prevRowToggle === null ) {
         currRowToggle.css('background-color', 'yellow');
     } else if (currRowToggle !== null && prevRowToggle !== null) {
         prevRowToggle.css('background-color', '')
     } 
-    $('#tableId').on('click', prevRowToggle = $(`#${rowIndex}`), nxtRowSelectionHighlight);
+    $('#tableId').on('click', prevRowToggle = $(`#${rowIndex}`), nxtRowSelectionHighlight); 
 } // end of func 
 
-const nxtRowSelectionHighlight = event => { 
-    let idValue = $(event.target).attr('class')
-    let rowIndex = idValue - 1;
-     $(`#${rowIndex}`).css('background-color', 'yellow');
+const nxtRowSelectionHighlight = event => { // act like the nextRowToggle
+    let idValue = $(event.target).attr('class') // gives the idValue of currTarget 
+    let rowIndex = idValue - 1; // starts rowIndex at 0 rather than 1 
+    $(`#${rowIndex}`).css('background-color', 'yellow');
 } // end of func 
 
 const pageLayout = () => {
     $('.id').append('<table id="layoutTable" border="2"/>')
     const parent = document.getElementById('layoutTable')
-    const thread = document.createElement('thread'); // could not use $('tag') see why later
     const th1 = document.createElement('th');// could not use $('tag') see why later
     th1.className='form';
     const th2 = document.createElement('th');// could not use $('tag') see why later
     th2.className='table';
-    parent.append(thread,th1,th2)
+    parent.append(th1,th2)
 } // end of func 
 
 $("document").ready(function() {  
