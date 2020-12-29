@@ -1,25 +1,23 @@
 const form = () => { 
     const form = $('<form/>'); 
-    const label = $('<label/>'); 
     const formLabels = ['name', 'age', 'gender', 'email', 'feedback']
     const labelBtns = [
         '<input type="submit" value="Add" id="Add"/>',
         '<input type="submit" value="Edit" id="Edit"/>',
         '<input type="submit" value="Delete" id="Delete"/>'
     ]
-
-    $.each(formLabels, (idx, formLabel) => { // generates the fields for the forms 
-        formLabel = formLabels[idx] // gives the labels name in dynamic fashion 
-        form.append(formLabel, `<input id="${formLabel}">`, '<br>','<br>')
-    })
     $('.form').append(form) // appends Add, Edit, delete btn to form 
+    $.each(formLabels, (idx, formLabel) => { // generates the fields for the forms 
+        let pTags = `<p class="${formLabel}">${formLabel}`
+        form.append(pTags, `<input id="${formLabel}">`, '<br>','<br>')
+        $(`.${formLabel}`).css('display', 'inline')
+    })
     $.each(labelBtns, (idx, labelBtn) => {
         $('.form').append(labelBtn)
     })
     $('#Add').on('click', addEventHandler);
     $('#Edit').on('click', editEventHandler);
     $('#Delete').on('click', deleteEventHandler);
-    
 } // end of func 
 
 const addEventHandler = () => {
@@ -46,18 +44,22 @@ const formValidation = () => {
     if ($('#name').val() !== null) { // validation for name 
         let hasNumber = /\d/ // checks if str has num 
         if(hasNumber.test($('#name').val())){ // test method used for testing validations     
-            $('#layoutTable').append('<tr>','TEST') // WORK ON THIS HERE 
             alert('Please input characters for your name')
-            console.log('invalid name');
+            $('.name').css('background-color', 'red')
             return false; // used for boolean value for validation before post API req 
+        } else {
+            $('.name').css('background-color', '')
         };
     }
 
     if ($('#age').val() !== null ) {
         let onlyNumbers = /^[0-9]+$/ 
         if (!onlyNumbers.test($('#age').val())) { // validation for age 
-            alert ('Please input only numbers for your age');
+            alert('Please input only numbers for your age')
+            $('.age').css('background-color', 'red')
             return false; // used for boolean value for validation before post API req 
+        } else {
+            $('.age').css('background-color', '')
         }
     }
 
@@ -65,14 +67,20 @@ const formValidation = () => {
         let onlyNumbers = /^[0-1]$/
         if ( !onlyNumbers.test($('#gender').val())) {
             alert ('Please input 0 if you are male, 1 if you are female');
+            $('.gender').css('background-color', 'red')
             return false; // used for boolean value for validation before post API req 
+        } else {
+            $('.gender').css('background-color', '')
         }
     }
 
     if ($('#email').val() !== null) { // validation for email 
         if ($('#email').val().indexOf('@') === -1 || $('#email').val().indexOf('.com') == -1) {
             alert ('Please input valid email address')
+            $('.email').css('background-color', 'red')
             return false; // used for boolean value for validation before post API req 
+        } else {
+            $('.email').css('background-color', '')
         }
     }
 
