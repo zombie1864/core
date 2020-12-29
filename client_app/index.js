@@ -9,7 +9,7 @@ const form = () => {
     $('.form').append(form) // appends Add, Edit, delete btn to form 
     $.each(formLabels, (idx, formLabel) => { // generates the fields for the forms 
         let pTags = `<p class="${formLabel}">${formLabel}`
-        form.append(pTags, `<input id="${formLabel}">`, '<br>','<br>')
+        form.append(pTags, `<input id="${formLabel}">`, '<br>',`<br id="${formLabel}Break">`)
         $(`.${formLabel}`).css('display', 'inline')
     })
     $.each(labelBtns, (idx, labelBtn) => {
@@ -37,50 +37,80 @@ const addEventHandler = () => {
                 alert('Something went wrong')
             }
         })
+    } else {
+        alert('Please fill out the form, thank you')
     }
 } // end of func 
 
 const formValidation = () => {
     if ($('#name').val() !== null) { // validation for name 
         let hasNumber = /\d/ // checks if str has num 
-        if(hasNumber.test($('#name').val())){ // test method used for testing validations     
-            alert('Please input characters for your name')
-            $('.name').css('background-color', 'red')
+        if(hasNumber.test($('#name').val()) || $('#name').val() === '') { // test method used for testing validations     
+            $('<p id="nameError">Please input characters for your name</p>').insertBefore('#nameBreak').css(
+                {
+                    'display': 'inline', 
+                    'text-decoration': 'underline', 
+                    'font-style': 'italic',
+                    'color': 'red' 
+                })
+            $('.name').css('background-color', 'red');
             return false; // used for boolean value for validation before post API req 
         } else {
-            $('.name').css('background-color', '')
+            $('.name').css('background-color', '');
+            $('#nameError').remove();
         };
     }
 
     if ($('#age').val() !== null ) {
         let onlyNumbers = /^[0-9]+$/ 
         if (!onlyNumbers.test($('#age').val())) { // validation for age 
-            alert('Please input only numbers for your age')
-            $('.age').css('background-color', 'red')
+            $('<p id="ageError">Please input only numbers for your age</p>').insertBefore('#ageBreak').css(
+                {
+                    'display': 'inline', 
+                    'text-decoration': 'underline', 
+                    'font-style': 'italic',
+                    'color': 'red' 
+                });
+            $('.age').css('background-color', 'red');
             return false; // used for boolean value for validation before post API req 
         } else {
-            $('.age').css('background-color', '')
+            $('.age').css('background-color', '');
+            $('#ageError').remove();
         }
     }
 
     if ($('#gender').val() !== null ) { // validation for gender
         let onlyNumbers = /^[0-1]$/
         if ( !onlyNumbers.test($('#gender').val())) {
-            alert ('Please input 0 if you are male, 1 if you are female');
-            $('.gender').css('background-color', 'red')
+            $('<p id="genderError">Please input 0 for male, 1 for female</p>').insertBefore('#genderBreak').css(
+                {
+                    'display': 'inline', 
+                    'text-decoration': 'underline', 
+                    'font-style': 'italic',
+                    'color': 'red' 
+                });
+            $('.gender').css('background-color', 'red');
             return false; // used for boolean value for validation before post API req 
         } else {
-            $('.gender').css('background-color', '')
+            $('.gender').css('background-color', '');
+            $('#genderError').remove();
         }
     }
 
     if ($('#email').val() !== null) { // validation for email 
         if ($('#email').val().indexOf('@') === -1 || $('#email').val().indexOf('.com') == -1) {
-            alert ('Please input valid email address')
-            $('.email').css('background-color', 'red')
+            $('<p id="emailError">Please input a valid email address</p>').insertBefore('#emailBreak').css(
+                {
+                    'display': 'inline', 
+                    'text-decoration': 'underline', 
+                    'font-style': 'italic',
+                    'color': 'red' 
+                });
+            $('.email').css('background-color', 'red');
             return false; // used for boolean value for validation before post API req 
         } else {
-            $('.email').css('background-color', '')
+            $('.email').css('background-color', '');
+            $('#emailError').remove();
         }
     }
 
@@ -203,4 +233,3 @@ $("document").ready(function() {
     dataTable = construct_table(); 
     formCol = form()
 }); 
-
