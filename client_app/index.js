@@ -145,7 +145,7 @@ const deleteEventHandler = () => {
     })
 } // end of func 
 
-const construct_table = () => {
+const construct_table = () => { // table that deals with [{}, {}, {}] DS with each obj being a row 
     let table = $('<table id="tableId"/>');
     $( () => {
         $.ajax({
