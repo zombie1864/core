@@ -145,30 +145,41 @@ const deleteEventHandler = () => {
     })
 } // end of func 
 
-const construct_table = () => { // table that deals with [{}, {}, {}] DS with each obj being a row 
+const table = () => { // table that deals with [{}, {}, {}] DS with each obj being a row 
     let table = $('<table id="tableId"/>');
     $( () => {
         $.ajax({
             type: 'GET', 
             url: 'http://127.0.0.1:5000/attr', 
-            success: data => {
-                let idValue = 1;
-                let rowID = 1; 
-                if (data.length === 0 ) {table.append('<p>No data<p>')}
-                $.each(data, (rowIndex, r) => {
-                        let row = $(`<tr id='${rowIndex}'/>`);
-                        $.each(r, (colIndex, c) => { 
+            success: data => { // data in the form of [{},{},{}]
+                let rowID = 1;
+                if (data.length === 0 ) {
+                    table.append('<p>No data')
+                } else {
+                    let keys = Object.keys(data[0]) // gives the keys from obj 
+                    table.append('Table').css('display', 'block')
+                    table.append(
+                        `<th>${keys[0]}`, 
+                        `<th>${keys[1]}`, 
+                        `<th>${keys[2]}`, 
+                        `<th>${keys[3]}`, 
+                        `<th>${keys[4]}`, 
+                        `<th>${keys[5]}`
+                    )
+                    $.each(data, (rowIndex, rowElObj) => {
+                        let row = $(`<tr id='${rowIndex}'/>`); // gives the HTML tr with id attr 
+                        $.each(rowElObj, (key, val) => { 
                             row.append(
-                                $('<t'+(rowIndex == 0 ?  `h class='${idValue}'` : `d class='${idValue}' `)+'/>').text(c) 
-                                );
-                            });
-                        idValue++
+                                $(`<td class='${rowID}' />`).text(val) 
+                            );
+                        });
                         rowID++
                         table.append(row);
                     });
                 }
-            })
+            }
         })
+    })
     $('.table').append(table)
     $('#tableId').on('click', rowSelector4Editing); // selects row data from table to populate on form 
     $('#tableId').on('click', rowSelectionHighlight); // highlights the row 
@@ -230,6 +241,6 @@ const pageLayout = () => {
 
 $("document").ready(function() {  
     appLayout = pageLayout()  
-    dataTable = construct_table(); 
+    dataTable = table(); 
     formCol = form()
 }); 
