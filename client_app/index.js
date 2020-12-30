@@ -6,6 +6,7 @@ const form = () => {
         '<input type="submit" value="Edit" id="Edit"/>',
         '<input type="submit" value="Delete" id="Delete"/>'
     ]
+    $('.form').append('Form')
     $('.form').append(form) // appends Add, Edit, delete btn to form 
     $.each(formLabels, (idx, formLabel) => { // generates the fields for the forms 
         let pTags = `<p class="${formLabel}">${formLabel}`
@@ -159,13 +160,18 @@ const table = () => { // table that deals with [{}, {}, {}] DS with each obj bei
                     let keys = Object.keys(data[0]) // gives the keys from obj 
                     table.append('Table').css('display', 'block')
                     table.append(
-                        `<th>${keys[0]}`, 
-                        `<th>${keys[1]}`, 
-                        `<th>${keys[2]}`, 
-                        `<th>${keys[3]}`, 
-                        `<th>${keys[4]}`, 
-                        `<th>${keys[5]}`
+                        `<th class="colName">${keys[0]}`, 
+                        `<th class="colName">${keys[1]}`, 
+                        `<th class="colName">${keys[2]}`, 
+                        `<th class="colName">${keys[3]}`, 
+                        `<th class="colName">${keys[4]}`, 
+                        `<th class="colName">${keys[5]}`
                     )
+                    $('.colName').css( // stylized col
+                        {
+                            'text-decoration': 'underline', 
+                            'font-style': 'italic',
+                        });
                     $.each(data, (rowIndex, rowElObj) => {
                         let row = $(`<tr id='${rowIndex}'/>`); // gives the HTML tr with id attr 
                         $.each(rowElObj, (key, val) => { 
