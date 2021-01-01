@@ -4,7 +4,8 @@ const form = () => {
     const labelBtns = [
         '<input type="submit" value="Add" id="Add"/>',
         '<input type="submit" value="Edit" id="Edit"/>',
-        '<input type="submit" value="Delete" id="Delete"/>'
+        '<input type="submit" value="Delete" id="Delete"/>',
+        '<input type="submit" value="Demo" id="Demo"/>'
     ]
     $('.form').append('Form')
     $('.form').append(form) // appends Add, Edit, delete btn to form 
@@ -19,6 +20,7 @@ const form = () => {
     $('#Add').on('click', addEventHandler);
     $('#Edit').on('click', editEventHandler);
     $('#Delete').on('click', deleteEventHandler);
+    $('#Demo').on('click', demoEventHandler);
 } // end of func 
 
 const addEventHandler = () => {
@@ -146,51 +148,100 @@ const deleteEventHandler = () => {
     })
 } // end of func 
 
-const table = () => { // table that deals with [{}, {}, {}] DS with each obj being a row 
-    let table = $('<table id="tableId"/>');
+const demoEventHandler = () => { // iterates seedDB, each obj is sent via post api 
+    $.each( seedDB, (idx, dataObj) => {
+        $.ajax({
+            type: 'POST', 
+            url: 'http://127.0.0.1:5000/attr',  
+            data: dataObj, 
+            error: () => {
+                alert('Something went wrong')
+            }
+        })
+    }) 
+} // end of func 
+
+const seedDB = [ // seeds the db with some dummy data  
+    {
+        'Age': '27', 
+        'Email': "jeff@gmail.com",
+        'Feedback': "demo test",
+        'Gender': '0',
+        'Name': "jeff"
+    }, 
+    {
+        'Age': '25', 
+        'Email': "jessie@gmail.com",
+        'Feedback': "demo test again",
+        'Gender': '1',
+        'Name': "jessie"
+    }, 
+    {
+        'Age': '29', 
+        'Email': "mark@gmail.com",
+        'Feedback': "mark's demo",
+        'Gender': '0',
+        'Name': "mark"
+    }, 
+    {
+        'Age': '22', 
+        'Email': "amy@gmail.com",
+        'Feedback': "a-demo-trick",
+        'Gender': '1',
+        'Name': "amy"
+    }
+]
+
+const tableTag = $('<table id="tableId"/>');
+
+const pageTable = () => { // table that deals with [{}, {}, {}] DS with each obj being a row 
     $( () => {
         $.ajax({
             type: 'GET', 
             url: 'http://127.0.0.1:5000/attr', 
-            success: data => { // data in the form of [{},{},{}]
-                let rowID = 1;
-                if (data.length === 0 ) {
-                    table.append('<p>No data')
+            success: dataFromDB => { // data in the form of [{},{},{}]
+                if (dataFromDB.length === 0) {
+                    tableTag.append('<p>No data')
                 } else {
-                    let keys = Object.keys(data[0]) // gives the keys from obj 
-                    table.append('Table').css('display', 'block')
-                    table.append(
-                        `<th class="colName">${keys[0]}`, 
-                        `<th class="colName">${keys[1]}`, 
-                        `<th class="colName">${keys[2]}`, 
-                        `<th class="colName">${keys[3]}`, 
-                        `<th class="colName">${keys[4]}`, 
-                        `<th class="colName">${keys[5]}`
-                    )
-                    $('.colName').css( // stylized col
-                        {
-                            'text-decoration': 'underline', 
-                            'font-style': 'italic',
-                        });
-                    $.each(data, (rowIndex, rowElObj) => {
-                        let row = $(`<tr id='${rowIndex}'/>`); // gives the HTML tr with id attr 
-                        $.each(rowElObj, (key, val) => { 
-                            row.append(
-                                $(`<td class='${rowID}' />`).text(val) 
-                            );
-                        });
-                        rowID++
-                        table.append(row);
-                    });
+                    table_generator_func(dataFromDB)
                 }
             }
         })
     })
-    $('.table').append(table)
+    $('.table').append(tableTag)
     $('#tableId').on('click', rowSelector4Editing); // selects row data from table to populate on form 
     $('#tableId').on('click', rowSelectionHighlight); // highlights the row 
     
 } // end of func 
+
+const table_generator_func = data => {
+    let rowID = 1;
+    let keys = Object.keys(data[0]) // gives the keys from obj 
+    tableTag.append('Table').css('display', 'block')
+    tableTag.append(
+        `<th class="colName">${keys[0]}`, 
+        `<th class="colName">${keys[1]}`, 
+        `<th class="colName">${keys[2]}`, 
+        `<th class="colName">${keys[3]}`, 
+        `<th class="colName">${keys[4]}`, 
+        `<th class="colName">${keys[5]}`
+    ) // gives each col a category name 
+    $('.colName').css( // stylized col
+        {
+            'text-decoration': 'underline', 
+            'font-style': 'italic',
+        });
+    $.each(data, (rowIndex, rowElObj) => {
+        let row = $(`<tr id='${rowIndex}'/>`); // gives the HTML tr with id attr 
+        $.each(rowElObj, (key, val) => { 
+            row.append(
+                $(`<td class='${rowID}' />`).text(val) 
+            );
+        });
+        rowID++
+        tableTag.append(row);
+    });
+}
 
 let rowID = null // each row on table has an ID
 let dataIDFromDB = null // the ID stored in db to each obj entry in db 
@@ -246,7 +297,7 @@ const pageLayout = () => {
 } // end of func 
 
 $("document").ready(function() {  
-    appLayout = pageLayout()  
-    dataTable = table(); 
-    formCol = form()
+    appLayout = pageLayout();  
+    dataTable = pageTable(); 
+    formCol = form(); 
 }); 
