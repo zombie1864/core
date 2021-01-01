@@ -268,7 +268,7 @@ const rowSelector4Editing = event => {
 let currRowToggle = null
 let prevRowToggle = null
 
-const rowSelectionHighlight = event => {
+const rowSelectionHighlight = event => { // highlights the currRow onClick 
     let idValue = $(event.target).attr('class') // gives the idValue of currTarget 
     let rowIndex = idValue - 1; // starts rowIndex at 0 rather than 1 
     currRowToggle = $(`#${rowIndex}`) // current rowIndex from []
@@ -280,7 +280,7 @@ const rowSelectionHighlight = event => {
     $('#tableId').on('click', prevRowToggle = $(`#${rowIndex}`), nxtRowSelectionHighlight); 
 } // end of func 
 
-const nxtRowSelectionHighlight = event => { // act like the nextRowToggle
+const nxtRowSelectionHighlight = event => { // highlights the next row onClick 
     let idValue = $(event.target).attr('class') // gives the idValue of currTarget 
     let rowIndex = idValue - 1; // starts rowIndex at 0 rather than 1 
     $(`#${rowIndex}`).css('background-color', 'yellow');
