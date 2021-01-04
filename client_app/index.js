@@ -296,7 +296,7 @@ const pageLayout = () => {
     parent.append(th1,th2)
 } // end of func 
 
-$("document").ready(function() {  
+$(() => {  // this is the same as $('document').ready(function() { ... })
     appLayout = pageLayout();  
     dataTable = pageTable(); 
     formCol = form(); 
