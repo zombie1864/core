@@ -1,48 +1,27 @@
 const form = () => { 
-    const formLabels = ['name', 'age', 'email', 'feedback', 'gender']
-    $('.form').append('Form')
-    $('.form').append(
-        `<th class="formColName">field label`, 
-        `<th class="formColName">text field`, 
-    ) // gives each col a category name 
-    $.each(formLabels, (rowIndex, formLabel) => {
-        let rowForm = $(`<tr class='${formLabel}'>`); // gives the HTML tr with id attr 
-        if ( rowIndex === 4 ) {
-            rowForm.append(`<td class='formLabel${formLabel[0].toUpperCase()+ formLabel.slice(1,formLabel.length)}'>${formLabel}</td>`,`<select id="${formLabel}Options">`);
-        } else {
-            rowForm.append(`<td class='formLabel${formLabel[0].toUpperCase()+ formLabel.slice(1,formLabel.length)}'>${formLabel}</td>`,`<input id="${formLabel}">`);
-        }
-        $('.form').append(rowForm);
-    });
-    $('#genderOptions').append('<option value = "0">Female', '<option value = "1">Male', '<option value = "2">Other')
-    addEventBtns()
-    formCss()
-} // end of func 
-
-const addEventBtns = () => {
+    const form = $('<form/>'); 
+    const formLabels = ['name', 'age', 'gender', 'email', 'feedback']
     const labelBtns = [
         '<input type="submit" value="Add" id="Add"/>',
         '<input type="submit" value="Edit" id="Edit"/>',
         '<input type="submit" value="Delete" id="Delete"/>',
         '<input type="submit" value="Demo" id="Demo"/>'
     ]
+    $('.form').append('Form')
+    $('.form').append(form) // appends Add, Edit, delete btn to form 
+    $.each(formLabels, (idx, formLabel) => { // generates the fields for the forms 
+        let pTags = `<p class="${formLabel}">${formLabel}`
+        form.append(pTags, `<input id="${formLabel}">`, '<br>',`<br id="${formLabel}Break">`)
+        $(`.${formLabel}`).css('display', 'inline')
+    })
     $.each(labelBtns, (idx, labelBtn) => {
         $('.form').append(labelBtn)
     })
-    $('#Add').on('click', addEventHandler); 
+    $('#Add').on('click', addEventHandler);
     $('#Edit').on('click', editEventHandler);
     $('#Delete').on('click', deleteEventHandler);
     $('#Demo').on('click', demoEventHandler);
-}
-
-const formCss = () => {
-    $('.formColName').css( // stylized col
-        {
-            'text-decoration': 'underline', 
-            'font-style': 'italic',
-            'color': 'green'
-        });
-}
+} // end of func 
 
 const addEventHandler = () => {
     if (formValidation()) { // validates the form before requesting API 
@@ -61,23 +40,26 @@ const addEventHandler = () => {
                 alert('Something went wrong')
             }
         })
+    } else {
+        alert('Please fill out the form, thank you')
     }
 } // end of func 
 
 const formValidation = () => {
     if ($('#name').val() !== null) { // validation for name 
-        if($('#name').val() === '') { // test method used for testing validations     
-            $('<p id="nameError">Please input a name</p>').insertBefore('#nameBreak').css(
+        let hasNumber = /\d/ // checks if str has num 
+        if(hasNumber.test($('#name').val()) || $('#name').val() === '') { // test method used for testing validations     
+            $('<p id="nameError">Please input characters for your name</p>').insertBefore('#nameBreak').css(
                 {
                     'display': 'inline', 
                     'text-decoration': 'underline', 
                     'font-style': 'italic',
                     'color': 'red' 
                 })
-            $('.formLabelName').css('background-color', 'red');
+            $('.name').css('background-color', 'red');
             return false; // used for boolean value for validation before post API req 
         } else {
-            $('.formLabelName').css('background-color', '');
+            $('.name').css('background-color', '');
             $('#nameError').remove();
         };
     }
@@ -85,38 +67,38 @@ const formValidation = () => {
     if ($('#age').val() !== null ) {
         let onlyNumbers = /^[0-9]+$/ 
         if (!onlyNumbers.test($('#age').val())) { // validation for age 
-            $('.age').append('<p id="ageError">Please input only numbers for your age')
-            $('#ageError').css(
+            $('<p id="ageError">Please input only numbers for your age</p>').insertBefore('#ageBreak').css(
                 {
+                    'display': 'inline', 
                     'text-decoration': 'underline', 
                     'font-style': 'italic',
                     'color': 'red' 
                 });
-            $('.formLabelAge').css('background-color', 'red');
+            $('.age').css('background-color', 'red');
             return false; // used for boolean value for validation before post API req 
         } else {
-            $('.formLabelAge').css('background-color', '');
+            $('.age').css('background-color', '');
             $('#ageError').remove();
         }
     }
 
-    // if ($('#gender').val() !== null ) { // validation for gender
-    //     let onlyNumbers = /^[0-1]$/
-    //     if ( !onlyNumbers.test($('#gender').val())) {
-    //         $('<p id="genderError">Please input 0 for male, 1 for female</p>').insertBefore('#genderBreak').css(
-    //             {
-    //                 'display': 'inline', 
-    //                 'text-decoration': 'underline', 
-    //                 'font-style': 'italic',
-    //                 'color': 'red' 
-    //             });
-    //         $('.formLabelGender').css('background-color', 'red');
-    //         return false; // used for boolean value for validation before post API req 
-    //     } else {
-    //         $('.formLabelGender').css('background-color', '');
-    //         $('#genderError').remove();
-    //     }
-    // }
+    if ($('#gender').val() !== null ) { // validation for gender
+        let onlyNumbers = /^[0-1]$/
+        if ( !onlyNumbers.test($('#gender').val())) {
+            $('<p id="genderError">Please input 0 for male, 1 for female</p>').insertBefore('#genderBreak').css(
+                {
+                    'display': 'inline', 
+                    'text-decoration': 'underline', 
+                    'font-style': 'italic',
+                    'color': 'red' 
+                });
+            $('.gender').css('background-color', 'red');
+            return false; // used for boolean value for validation before post API req 
+        } else {
+            $('.gender').css('background-color', '');
+            $('#genderError').remove();
+        }
+    }
 
     if ($('#email').val() !== null) { // validation for email 
         if ($('#email').val().indexOf('@') === -1 || $('#email').val().indexOf('.com') == -1) {
@@ -127,10 +109,10 @@ const formValidation = () => {
                     'font-style': 'italic',
                     'color': 'red' 
                 });
-            $('.formLabelEmail').css('background-color', 'red');
+            $('.email').css('background-color', 'red');
             return false; // used for boolean value for validation before post API req 
         } else {
-            $('.formLabelEmail').css('background-color', '');
+            $('.email').css('background-color', '');
             $('#emailError').remove();
         }
     }
@@ -138,7 +120,7 @@ const formValidation = () => {
     return true; // used for boolean value for validation before post API req 
 } // end of func 
 
-const editEventHandler = () => { // NEED TO ADD FORM VALIDATION
+const editEventHandler = () => {
     const dataSent4Update = {
         "Name":$('#name').val(), 
         "Age":$('#age').val(), 
@@ -232,7 +214,7 @@ const pageTable = () => { // table that deals with [{}, {}, {}] DS with each obj
     
 } // end of func 
 
-const table_generator_func = data => { // data comes from db 
+const table_generator_func = data => {
     let rowID = 1;
     let keys = Object.keys(data[0]) // gives the keys from obj 
     tableTag.append('Table').css('display', 'block')
@@ -249,8 +231,8 @@ const table_generator_func = data => { // data comes from db
             'text-decoration': 'underline', 
             'font-style': 'italic',
         });
-    $.each(data, (rowIdx, rowElObj) => {
-        let row = $(`<tr id='${rowIdx}'/>`); // gives the HTML tr with id attr 
+    $.each(data, (rowIndex, rowElObj) => {
+        let row = $(`<tr id='${rowIndex}'/>`); // gives the HTML tr with id attr 
         $.each(rowElObj, (key, val) => { 
             row.append(
                 $(`<td class='${rowID}' />`).text(val) 
@@ -307,15 +289,15 @@ const nxtRowSelectionHighlight = event => { // highlights the next row onClick
 const pageLayout = () => {
     $('.id').append('<table id="layoutTable" border="2"/>')
     const parent = document.getElementById('layoutTable')
-    const th1 = document.createElement('th');// creates th tag 
+    const th1 = document.createElement('th');// could not use $('tag') see why later
     th1.className='form';
-    const th2 = document.createElement('th');// creates th tag
+    const th2 = document.createElement('th');// could not use $('tag') see why later
     th2.className='table';
     parent.append(th1,th2)
 } // end of func 
 
 $(() => {  // this is the same as $('document').ready(function() { ... })
     appLayout = pageLayout();  
-    formCol = form(); 
     dataTable = pageTable(); 
+    formCol = form(); 
 }); 
