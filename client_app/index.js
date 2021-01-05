@@ -65,21 +65,9 @@ const addEventHandler = () => {
 } // end of func 
 
 const formValidation = () => {
+    
     if ($('#name').val() !== null) { // validation for name 
-        if($('#name').val() === '') { // test method used for testing validations     
-            $('<p id="nameError">Please input a name</p>').insertBefore('#nameBreak').css(
-                {
-                    'display': 'inline', 
-                    'text-decoration': 'underline', 
-                    'font-style': 'italic',
-                    'color': 'red' 
-                })
-            $('.formLabelName').css('background-color', 'red');
-            return false; // used for boolean value for validation before post API req 
-        } else {
-            $('.formLabelName').css('background-color', '');
-            $('#nameError').remove();
-        };
+        nameValidation()
     }
 
     if ($('#age').val() !== null ) {
@@ -137,6 +125,38 @@ const formValidation = () => {
 
     return true; // used for boolean value for validation before post API req 
 } // end of func 
+
+const nameValidation = () => {
+    const emailUrls = ['.com', '.co', '.io', '.net', '.edu']
+    let nameValue = $('#name').val()
+    $.each(emailUrls, (idx, emailUrl) => {
+        let emailUrlIdx = $('#name').val().indexOf(emailUrl)
+        if ( nameValue === '' ) {
+            $('.name').append('<p id="nameError">Please input a name</p>')
+            $('#nameError').css(
+                {
+                    'text-decoration': 'underline', 
+                    'font-style': 'italic',
+                    'color': 'red' 
+                })
+            $('.formLabelName').css('background-color', 'red');
+            return false; // used for boolean value for validation before post API req 
+        } else if (emailUrlIdx !== -1) {
+            $('.name').append('<p id="nameError">Please input a name</p>')
+            $('#nameError').css(
+                {
+                    'text-decoration': 'underline', 
+                    'font-style': 'italic',
+                    'color': 'red' 
+                })
+            $('.formLabelName').css('background-color', 'red');
+            return false 
+        } else {
+            $('.formLabelName').css('background-color', '');
+            $('#nameError').remove();
+        }
+    })
+}
 
 const editEventHandler = () => { // NEED TO ADD FORM VALIDATION
     const dataSent4Update = {
