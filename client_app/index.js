@@ -20,19 +20,34 @@ const form = () => {
 } // end of func 
 
 const addEventBtns = () => {
-    const labelBtns = [
-        '<input type="submit" value="Add" id="Add"/>',
-        '<input type="submit" value="Edit" id="Edit"/>',
-        '<input type="submit" value="Delete" id="Delete"/>',
-        '<input type="submit" value="Demo" id="Demo"/>'
-    ]
+    const labelBtns = ['Add', 'Edit', 'Delete', 'Demo']
+
     $.each(labelBtns, (idx, labelBtn) => {
-        $('.form').append(labelBtn)
+        $('.form').append(`<input type="submit" value="${labelBtn}" id="${labelBtn}">`)
     })
     $('#Add').on('click', addEventHandler); 
     $('#Edit').on('click', editEventHandler);
     $('#Delete').on('click', deleteEventHandler);
     $('#Demo').on('click', demoEventHandler);
+    btnsCss(labelBtns)
+}
+
+const btnsCss = labelBtns => {
+    $.each(labelBtns, ( idx, labelBtn) => {
+        $(`#${labelBtn}`).css(
+            {
+                'background-color': '#4CAF50',
+                'border-radius': '10px',
+                'color': 'white',
+                'padding': '10px 20px',
+                'text-align': 'center',
+                'display': 'inline-block',
+                'font-size': '16px',
+                'margin': '4px 5px',
+                'cursor': 'pointer'
+            }
+        )
+    })
 }
 
 const formCss = () => {
@@ -44,7 +59,7 @@ const formCss = () => {
         });
 }
 
-const formValidation = () => {
+const formValidated = () => {
     let allValidationReq = 0
     if ($('#name').val() !== null) { // validation for name 
         if ( nameValidation() ) allValidationReq ++
@@ -158,7 +173,7 @@ const invalidEmailAddress = () => {
 }
 
 const addEventHandler = () => {
-    if (formValidation()) { // validates the form before requesting API 
+    if (formValidated()) { // validates the form before requesting API 
         const dataSent = { // data to be transmitted with post HTTP req 
             "Name":$('#name').val(), 
             "Age":$('#age').val(), 
@@ -170,6 +185,9 @@ const addEventHandler = () => {
             type: 'POST', 
             url: 'http://127.0.0.1:5000/attr',  
             data: dataSent, 
+            success: () => {
+                location.reload()
+            }, 
             error: () => {
                 alert('Something went wrong')
             }
@@ -178,7 +196,7 @@ const addEventHandler = () => {
 } // end of func 
 
 const editEventHandler = () => { 
-    if (formValidation()) {
+    if (formValidated()) {
         const dataSent4Update = {
             "Name":$('#name').val(), 
             "Age":$('#age').val(), 
@@ -190,6 +208,9 @@ const editEventHandler = () => {
             type: 'PUT', 
             url: `http://127.0.0.1:5000/attr/${dataIDFromDB}`, 
             data: dataSent4Update, 
+            success: () => {
+                location.reload()
+            },
             error: () => {
                 alert('Something went wrong')
             }
@@ -201,6 +222,9 @@ const deleteEventHandler = () => {
     $.ajax({
         type: 'DELETE', 
         url: `http://127.0.0.1:5000/attr/${dataIDFromDB}`, 
+        success: () => {
+            location.reload()
+        }, 
         error: () => {
             alert('Something went wrong')
         }
@@ -359,4 +383,5 @@ $(() => {  // this is the same as $('document').ready(function() { ... })
     appLayout = pageLayout();  
     formCol = form(); 
     dataTable = pageTable(); 
+    // location.reload()
 }); 
