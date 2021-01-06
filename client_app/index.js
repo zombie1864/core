@@ -14,7 +14,7 @@ const form = () => {
         }
         $('.form').append(rowForm);
     });
-    $('#genderOptions').append('<option value = "0">Female', '<option value = "1">Male', '<option value = "2">Other')
+    $('#genderOptions').append('<option value = "0">Female', '<option  value = "1">Male', '<option value = "2">Other')
     addEventBtns()
     formCss()
 } // end of func 
@@ -44,14 +44,117 @@ const formCss = () => {
         });
 }
 
+const formValidation = () => {
+    let allValidation = 0
+    if ($('#name').val() !== null) { // validation for name 
+        if ( nameValidation() ) allValidation ++
+    }
+
+    if ($('#age').val() !== null ) { // validation for age 
+        if ( ageValidation() ) allValidation ++
+    }
+    
+    if ($('#email').val() !== null) { // validation for email 
+        if ( emailValidation() ) allValidation ++
+    }
+
+    if ( allValidation === 3 ) return true; // used for boolean value for validation before post API req 
+} // end of func 
+
+const emailUrls = ['.com', '.co', '.io', '.net', '.edu']
+
+const nameValidation = () => {
+    let nameValue = $('#name').val()
+    if ( nameValue === '' ) {
+        $('.name').append('<p id="nameError">Please input a name</p>')
+        $('#nameError').css(
+            {
+                'text-decoration': 'underline', 
+                'font-style': 'italic',
+                'color': 'red' 
+            })
+        $('.formLabelName').css('background-color', 'red');
+        return false; // used for boolean value for validation before post API req 
+    }
+    $.each(emailUrls, (idx, emailUrl) => {
+        let emailUrlIdx = $('#name').val().indexOf(emailUrl)
+         if (emailUrlIdx !== -1) {
+            $('.name').append('<p id="nameError">Please input a name</p>')
+            $('#nameError').css(
+                {
+                    'text-decoration': 'underline', 
+                    'font-style': 'italic',
+                    'color': 'red' 
+                })
+            $('.formLabelName').css('background-color', 'red');
+            return false 
+        } else {
+            $('.formLabelName').css('background-color', '');
+            $('#nameError').remove();
+        }
+    })
+    return true; 
+}
+
+const ageValidation = () => {
+    let onlyNumbers = /^[0-9]+$/ 
+    if (!onlyNumbers.test($('#age').val())) { // validation for age 
+        $('.age').append('<p id="ageError">Please input only numbers for your age')
+        $('#ageError').css(
+            {
+                'text-decoration': 'underline', 
+                'font-style': 'italic',
+                'color': 'red' 
+            });
+        $('.formLabelAge').css('background-color', 'red');
+        return false; // used for boolean value for validation before post API req 
+    } else {
+        $('.formLabelAge').css('background-color', '');
+        $('#ageError').remove();
+    }
+
+    return true; 
+}
+
+const emailValidation = () => {
+    if ( validEmailAddress() ) {
+        $('.email').append('<p id="emailError">Please input a valid email address</p>')
+        $('#emailError').css(
+            {
+                'text-decoration': 'underline', 
+                'font-style': 'italic',
+                'color': 'red' 
+            });
+        $('.formLabelEmail').css('background-color', 'red');
+        return false; // used for boolean value for validation before post API req 
+    } else {
+        $('.formLabelEmail').css('background-color', '');
+        $('#emailError').remove();
+    }
+
+    return true; 
+}
+
+const validEmailAddress = () => {
+    if ( $('#email').val().indexOf('@') === -1  ) {
+        return true; 
+    } else {
+        $.each(emailUrls, (idx, emailUrl) => {
+            if ( $('#email').val().indexOf(emailUrl) === -1 ) {
+                return true; 
+            }
+        })
+    }
+}
+
 const addEventHandler = () => {
     if (formValidation()) { // validates the form before requesting API 
         const dataSent = { // data to be transmitted with post HTTP req 
             "Name":$('#name').val(), 
             "Age":$('#age').val(), 
-            "Gender":$('#gender').val(), 
             "Email":$('#email').val(), 
-            "Feedback":$('#feedback').val()
+            "Feedback":$('#feedback').val(),
+            "Gender":$('#genderOptions option:selected').val()
         }
         $.ajax({
             type: 'POST', 
@@ -62,80 +165,6 @@ const addEventHandler = () => {
             }
         })
     }
-} // end of func 
-
-const formValidation = () => {
-    if ($('#name').val() !== null) { // validation for name 
-        if($('#name').val() === '') { // test method used for testing validations     
-            $('<p id="nameError">Please input a name</p>').insertBefore('#nameBreak').css(
-                {
-                    'display': 'inline', 
-                    'text-decoration': 'underline', 
-                    'font-style': 'italic',
-                    'color': 'red' 
-                })
-            $('.formLabelName').css('background-color', 'red');
-            return false; // used for boolean value for validation before post API req 
-        } else {
-            $('.formLabelName').css('background-color', '');
-            $('#nameError').remove();
-        };
-    }
-
-    if ($('#age').val() !== null ) {
-        let onlyNumbers = /^[0-9]+$/ 
-        if (!onlyNumbers.test($('#age').val())) { // validation for age 
-            $('.age').append('<p id="ageError">Please input only numbers for your age')
-            $('#ageError').css(
-                {
-                    'text-decoration': 'underline', 
-                    'font-style': 'italic',
-                    'color': 'red' 
-                });
-            $('.formLabelAge').css('background-color', 'red');
-            return false; // used for boolean value for validation before post API req 
-        } else {
-            $('.formLabelAge').css('background-color', '');
-            $('#ageError').remove();
-        }
-    }
-
-    // if ($('#gender').val() !== null ) { // validation for gender
-    //     let onlyNumbers = /^[0-1]$/
-    //     if ( !onlyNumbers.test($('#gender').val())) {
-    //         $('<p id="genderError">Please input 0 for male, 1 for female</p>').insertBefore('#genderBreak').css(
-    //             {
-    //                 'display': 'inline', 
-    //                 'text-decoration': 'underline', 
-    //                 'font-style': 'italic',
-    //                 'color': 'red' 
-    //             });
-    //         $('.formLabelGender').css('background-color', 'red');
-    //         return false; // used for boolean value for validation before post API req 
-    //     } else {
-    //         $('.formLabelGender').css('background-color', '');
-    //         $('#genderError').remove();
-    //     }
-    // }
-
-    if ($('#email').val() !== null) { // validation for email 
-        if ($('#email').val().indexOf('@') === -1 || $('#email').val().indexOf('.com') == -1) {
-            $('<p id="emailError">Please input a valid email address</p>').insertBefore('#emailBreak').css(
-                {
-                    'display': 'inline', 
-                    'text-decoration': 'underline', 
-                    'font-style': 'italic',
-                    'color': 'red' 
-                });
-            $('.formLabelEmail').css('background-color', 'red');
-            return false; // used for boolean value for validation before post API req 
-        } else {
-            $('.formLabelEmail').css('background-color', '');
-            $('#emailError').remove();
-        }
-    }
-
-    return true; // used for boolean value for validation before post API req 
 } // end of func 
 
 const editEventHandler = () => { // NEED TO ADD FORM VALIDATION
