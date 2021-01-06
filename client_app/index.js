@@ -45,23 +45,22 @@ const formCss = () => {
 }
 
 const formValidation = () => {
-    let allValidation = 0
+    let allValidationReq = 0
     if ($('#name').val() !== null) { // validation for name 
-        if ( nameValidation() ) allValidation ++
+        if ( nameValidation() ) allValidationReq ++
     }
 
     if ($('#age').val() !== null ) { // validation for age 
-        if ( ageValidation() ) allValidation ++
+        if ( ageValidation() ) allValidationReq ++
     }
     
     if ($('#email').val() !== null) { // validation for email 
-        if ( emailValidation() ) allValidation ++
+        if ( emailValidation() ) allValidationReq ++
+        // console.log(emailValidation());
     }
 
-    if ( allValidation === 3 ) return true; // used for boolean value for validation before post API req 
+    if ( allValidationReq === 3 ) return true; // used for boolean value for validation before post API req 
 } // end of func 
-
-const emailUrls = ['.com', '.co', '.io', '.net', '.edu']
 
 const nameValidation = () => {
     let nameValue = $('#name').val()
@@ -116,8 +115,10 @@ const ageValidation = () => {
     return true; 
 }
 
+const emailUrls = ['.com', '.co', '.io', '.net', '.edu']
+
 const emailValidation = () => {
-    if ( validEmailAddress() ) {
+    if ( invalidEmailAddress() ) {
         $('.email').append('<p id="emailError">Please input a valid email address</p>')
         $('#emailError').css(
             {
@@ -135,16 +136,20 @@ const emailValidation = () => {
     return true; 
 }
 
-const validEmailAddress = () => {
-    if ( $('#email').val().indexOf('@') === -1  ) {
-        return true; 
-    } else {
-        $.each(emailUrls, (idx, emailUrl) => {
-            if ( $('#email').val().indexOf(emailUrl) === -1 ) {
-                return true; 
-            }
-        })
-    }
+const invalidEmailAddress = () => {
+    let missingEmailRequirements = 0; 
+
+    if ( $('#email').val().indexOf('@') === -1  ) missingEmailRequirements++; 
+
+    $.each(emailUrls, (idx, emailUrl) => {
+        if ( ($('#email').val().includes(emailUrl)) ) {
+            return false 
+        } else if ( idx === emailUrls.length - 1 ) {
+            missingEmailRequirements++;
+        }
+    })
+
+    return (missingEmailRequirements > 0 ) ? true : false
 }
 
 const addEventHandler = () => {
@@ -167,22 +172,24 @@ const addEventHandler = () => {
     }
 } // end of func 
 
-const editEventHandler = () => { // NEED TO ADD FORM VALIDATION
-    const dataSent4Update = {
-        "Name":$('#name').val(), 
-        "Age":$('#age').val(), 
-        "Gender":$('#gender').val(), 
-        "Email":$('#email').val(), 
-        "Feedback":$('#feedback').val()
-    }
-    $.ajax({
-        type: 'PUT', 
-        url: `http://127.0.0.1:5000/attr/${dataIDFromDB}`, 
-        data: dataSent4Update, 
-        error: () => {
-            alert('Something went wrong')
+const editEventHandler = () => { 
+    if (formValidation()) {
+        const dataSent4Update = {
+            "Name":$('#name').val(), 
+            "Age":$('#age').val(), 
+            "Email":$('#email').val(), 
+            "Feedback":$('#feedback').val(),
+            "Gender":$('#genderOptions option:selected').val()
         }
-    })
+        $.ajax({
+            type: 'PUT', 
+            url: `http://127.0.0.1:5000/attr/${dataIDFromDB}`, 
+            data: dataSent4Update, 
+            error: () => {
+                alert('Something went wrong')
+            }
+        })
+    }
 } // end of func 
 
 const deleteEventHandler = () => {
