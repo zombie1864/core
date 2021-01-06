@@ -56,7 +56,6 @@ const formValidation = () => {
     
     if ($('#email').val() !== null) { // validation for email 
         if ( emailValidation() ) allValidationReq ++
-        // console.log(emailValidation());
     }
 
     if ( allValidationReq === 3 ) return true; // used for boolean value for validation before post API req 
@@ -64,7 +63,8 @@ const formValidation = () => {
 
 const nameValidation = () => {
     let nameValue = $('#name').val()
-    if ( nameValue === '' ) {
+    if ( $('#nameError').length > 0 ) {
+    } else if ( nameValue === '' ) {
         $('.name').append('<p id="nameError">Please input a name</p>')
         $('#nameError').css(
             {
@@ -75,6 +75,7 @@ const nameValidation = () => {
         $('.formLabelName').css('background-color', 'red');
         return false; // used for boolean value for validation before post API req 
     }
+
     $.each(emailUrls, (idx, emailUrl) => {
         let emailUrlIdx = $('#name').val().indexOf(emailUrl)
          if (emailUrlIdx !== -1) {
@@ -87,17 +88,18 @@ const nameValidation = () => {
                 })
             $('.formLabelName').css('background-color', 'red');
             return false 
-        } else {
+        } else if ( emailUrlIdx === -1 && $('#name').val().length > 1 ) {
             $('.formLabelName').css('background-color', '');
             $('#nameError').remove();
         }
     })
-    return true; 
+    if ( $('#nameError').length === 0 ) return true; 
 }
 
 const ageValidation = () => {
     let onlyNumbers = /^[0-9]+$/ 
-    if (!onlyNumbers.test($('#age').val())) { // validation for age 
+    if ( $('#ageError').length > 0 ) {
+    } else if (!onlyNumbers.test($('#age').val())) { // validation for age 
         $('.age').append('<p id="ageError">Please input only numbers for your age')
         $('#ageError').css(
             {
@@ -107,18 +109,20 @@ const ageValidation = () => {
             });
         $('.formLabelAge').css('background-color', 'red');
         return false; // used for boolean value for validation before post API req 
-    } else {
+    }
+    if ( $('#age').val() > 0 ) {
         $('.formLabelAge').css('background-color', '');
         $('#ageError').remove();
     }
 
-    return true; 
+    if ( $('#ageError').length === 0 ) return true; 
 }
 
 const emailUrls = ['.com', '.co', '.io', '.net', '.edu']
 
 const emailValidation = () => {
-    if ( invalidEmailAddress() ) {
+    if ( $('#emailError').length > 0 ) {
+    } else if ( invalidEmailAddress() ) {
         $('.email').append('<p id="emailError">Please input a valid email address</p>')
         $('#emailError').css(
             {
@@ -128,12 +132,13 @@ const emailValidation = () => {
             });
         $('.formLabelEmail').css('background-color', 'red');
         return false; // used for boolean value for validation before post API req 
-    } else {
+    } 
+    if ( $('#email').val().length > 0 ) {
         $('.formLabelEmail').css('background-color', '');
         $('#emailError').remove();
     }
 
-    return true; 
+    if ( $('#emailError').length === 0 ) return true; 
 }
 
 const invalidEmailAddress = () => {
