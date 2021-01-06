@@ -186,7 +186,7 @@ const addEventHandler = () => {
             url: 'http://127.0.0.1:5000/attr',  
             data: dataSent, 
             success: () => {
-                location.reload()
+                location.reload() // reloads the page on success 
             }, 
             error: () => {
                 alert('Something went wrong')
@@ -209,7 +209,7 @@ const editEventHandler = () => {
             url: `http://127.0.0.1:5000/attr/${dataIDFromDB}`, 
             data: dataSent4Update, 
             success: () => {
-                location.reload()
+                location.reload() // reloads the page on success 
             },
             error: () => {
                 alert('Something went wrong')
@@ -223,7 +223,7 @@ const deleteEventHandler = () => {
         type: 'DELETE', 
         url: `http://127.0.0.1:5000/attr/${dataIDFromDB}`, 
         success: () => {
-            location.reload()
+            location.reload() // reloads the page on success 
         }, 
         error: () => {
             alert('Something went wrong')
@@ -341,7 +341,7 @@ const rowSelector4Editing = event => {
             dataIDFromDB = dataValuesArray[5] // assigns var to id value from db globally 
             $('#name').val(dataValuesArray[4]) // fill in dataValue to form entry
             $('#age').val(dataValuesArray[0]) // fill in dataValue to form entry
-            $('#gender').val(dataValuesArray[3]) // fill in dataValue to form entry
+            $('#genderOptions').val(dataValuesArray[3]) // fill in dataValue to form entry
             $('#email').val(dataValuesArray[1]) // fill in dataValue to form entry
             $('#feedback').val(dataValuesArray[2]) // fill in dataValue to form entry
         }
@@ -383,5 +383,4 @@ $(() => {  // this is the same as $('document').ready(function() { ... })
     appLayout = pageLayout();  
     formCol = form(); 
     dataTable = pageTable(); 
-    // location.reload()
 }); 
