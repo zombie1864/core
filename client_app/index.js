@@ -1,5 +1,4 @@
 const emailUrls = ['.com', '.co', '.io', '.net', '.edu']
-const tableTag = $('<table id="tableId"/>');
 let rowID = null // each row on table has an ID
 let dataIDFromDB = null // the ID stored in db to each obj entry in db 
 let currRowToggle = null
@@ -365,6 +364,7 @@ const seedDB = [ // seeds the db with some dummy data
 ]
 
 const pageTable = () => { // table that deals with [{}, {}, {}] DS with each obj being a row 
+const tableTag = $('<table id="tableId"/>');
     $( () => {
         $.ajax({
             type: 'GET', 
@@ -384,7 +384,7 @@ const pageTable = () => { // table that deals with [{}, {}, {}] DS with each obj
                     )
                 } else {
                     tableTag.remove('.noData2')
-                    table_generator_func(dataFromDB)
+                    table_generator_func(dataFromDB, tableTag)
                 }            
             }
         })
@@ -394,7 +394,7 @@ const pageTable = () => { // table that deals with [{}, {}, {}] DS with each obj
     $('#tableId').on('click', rowSelectionHighlight); // highlights the row     
 } // end of func 
 
-const table_generator_func = data => { // data comes from db 
+const table_generator_func = (data, tableTag) => { // data comes from db 
     let rowID = 1;
     let keys = Object.keys(data[0]) // gives the keys from obj 
     tableTag.append('Table').css('display', 'block')
