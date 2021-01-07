@@ -1,3 +1,10 @@
+const emailUrls = ['.com', '.co', '.io', '.net', '.edu']
+const tableTag = $('<table id="tableId"/>');
+let rowID = null // each row on table has an ID
+let dataIDFromDB = null // the ID stored in db to each obj entry in db 
+let currRowToggle = null
+let prevRowToggle = null
+
 const form = () => { 
     const formLabels = ['name', 'age', 'email', 'feedback', 'gender']
     const inputPlaceHolders = ['bobby247', '18', 'abc@ccny.cuny.edu', 'cool']
@@ -207,8 +214,6 @@ const ageValidation = () => {
     if ( $('#ageError').length === 0 ) return true; 
 } // end of func
 
-const emailUrls = ['.com', '.co', '.io', '.net', '.edu']
-
 const emailValidation = () => {
     if ( $('#emailError').length > 0 ) {
     } else if ( invalidEmailAddress() ) {
@@ -359,8 +364,6 @@ const seedDB = [ // seeds the db with some dummy data
     }
 ]
 
-const tableTag = $('<table id="tableId"/>');
-
 const pageTable = () => { // table that deals with [{}, {}, {}] DS with each obj being a row 
     $( () => {
         $.ajax({
@@ -420,9 +423,6 @@ const table_generator_func = data => { // data comes from db
     });
 } // end of func
 
-let rowID = null // each row on table has an ID
-let dataIDFromDB = null // the ID stored in db to each obj entry in db 
-
 const rowSelector4Editing = event => {  
     let idValue = $(event.target).attr('class') //gets idValue from class attr 
     rowID = idValue 
@@ -441,9 +441,6 @@ const rowSelector4Editing = event => {
         }
     })
 } // end of func 
-
-let currRowToggle = null
-let prevRowToggle = null
 
 const rowSelectionHighlight = event => { // highlights the currRow onClick 
     let idValue = $(event.target).attr('class') // gives the idValue of currTarget 
