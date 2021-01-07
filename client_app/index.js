@@ -1,15 +1,21 @@
 const form = () => { 
     const formLabels = ['name', 'age', 'email', 'feedback', 'gender']
     const inputPlaceHolders = ['bobby247', '18', 'abc@ccny.cuny.edu', 'cool']
+    const formColNameClasses = ['fieldCol', 'textCol']
+    const tableHeaders = ['field label', 'text field']
+
     $('.form').append('Form')
-    $('.form').append(
-        `<th class="formColName">field label`, 
-        `<th class="formColName">text field`, 
-    ) // gives each col a category name 
-    formRowandData(formLabels, inputPlaceHolders)
+    formTableHeaders(formColNameClasses, tableHeaders) // gives each col a category name 
+    formRowandData(formLabels, inputPlaceHolders) // gives form table, row and td tags  
     addEventBtns()
-    formCss()
+    formCss(formLabels) // stylizes the form
 } // end of func 
+
+const formTableHeaders = (formColNameClasses, tableHeaders) => {
+    $.each(tableHeaders, (idx, tableHeader) => {
+        $('.form').append(`<th class="${formColNameClasses[idx]}">${tableHeader}`)
+    })
+} // end of func
 
 const formRowandData = (formLabels, inputPlaceHolders) => {
     $.each(formLabels, (rowIndex, formLabel) => {
@@ -22,7 +28,7 @@ const formRowandData = (formLabels, inputPlaceHolders) => {
         $('.form').append(rowForm);
     });
     $('#genderOptions').append('<option value = "0">Female', '<option  value = "1">Male', '<option value = "2">Other')
-}
+} // end of func
 
 const addEventBtns = () => {
     const labelBtns = ['Add', 'Edit', 'Delete', 'Demo']
@@ -34,8 +40,14 @@ const addEventBtns = () => {
     $('#Edit').on('click', editEventHandler);
     $('#Delete').on('click', deleteEventHandler);
     $('#Demo').on('click', demoEventHandler);
-    btnsCss(labelBtns)
-}
+    $( document ).ajaxComplete( () => { // determines the css style for btns after ajax call 
+        if ( $('#tableId tr').length === 0 ) {
+            noDataBtnsCss(labelBtns)
+        } else {
+            btnsCss(labelBtns)
+        }
+    })
+} // end of func
 
 const btnsCss = labelBtns => {
     $.each(labelBtns, ( idx, labelBtn) => {
@@ -51,21 +63,54 @@ const btnsCss = labelBtns => {
                 'margin': '10px 5px',
                 'cursor': 'pointer', 
                 'position': 'relative', 
-                'bottom': '-300px', 
-                'right': '50px'
+                'bottom': '-150px',
             }
         )
     })
-}
+} // end of func
 
-const formCss = () => {
-    $('.formColName').css( // stylized col
+const noDataBtnsCss = labelBtns => {
+    $.each(labelBtns, ( idx, labelBtn) => {
+        $(`#${labelBtn}`).css(
+            {
+                'background-color': '#4CAF50',
+                'border-radius': '10px',
+                'color': 'white',
+                'padding': '10px 20px',
+                'text-align': 'center',
+                'display': 'inline-block',
+                'font-size': '16px',
+                'margin': '10px 5px',
+                'cursor': 'pointer', 
+                'position': 'relative', 
+                'bottom': '-150px',
+                'left': '100px'
+            }
+        )
+    })
+} // end of func
+
+const formCss = formLabels => {
+    $('.fieldCol, .textCol').css( // selects both col and stylize 
         {
             'text-decoration': 'underline', 
             'font-style': 'italic',
-            'color': 'green'
-        });
-}
+            'color': 'green',
+            'padding': '5px 10px',
+            'position': 'relative', 
+            'left': '10vw', 
+        }
+    );
+    $.each(formLabels, (idx, formLabel) => {
+        $(`#${formLabel}, #genderOptions, .formLabel${formLabel[0].toUpperCase()+ formLabel.slice(1,formLabel.length)}`).css(
+            {
+                'position': 'relative', 
+                'left': '10vw',     
+            }
+        )
+    })
+    $('table th.form').css('border-spacing', '25px')
+} // end of func
 
 const formValidated = () => {
     let allValidationReq = 0
@@ -93,9 +138,16 @@ const nameValidation = () => {
             {
                 'text-decoration': 'underline', 
                 'font-style': 'italic',
-                'color': 'red' 
+                'color': 'red', 
+                'position': 'relative', 
+                'left': '10vw', 
             })
-        $('.formLabelName').css('background-color', 'red');
+        $('.formLabelName').css(
+            {
+                'background-color': 'red', 
+                'border-radius': '10px',
+            }
+        );
         return false; // used for boolean value for validation before post API req 
     }
 
@@ -107,9 +159,16 @@ const nameValidation = () => {
                 {
                     'text-decoration': 'underline', 
                     'font-style': 'italic',
-                    'color': 'red' 
+                    'color': 'red', 
+                    'position': 'relative', 
+                    'left': '10vw', 
                 })
-            $('.formLabelName').css('background-color', 'red');
+            $('.formLabelName').css(
+                {
+                    'background-color': 'red',
+                    'border-radius': '10px',
+                }
+            );
             return false 
         } else if ( emailUrlIdx === -1 && $('#name').val().length > 1 ) {
             $('.formLabelName').css('background-color', '');
@@ -117,7 +176,7 @@ const nameValidation = () => {
         }
     })
     if ( $('#nameError').length === 0 ) return true; 
-}
+} // end of func
 
 const ageValidation = () => {
     let onlyNumbers = /^[0-9]+$/ 
@@ -128,9 +187,16 @@ const ageValidation = () => {
             {
                 'text-decoration': 'underline', 
                 'font-style': 'italic',
-                'color': 'red' 
+                'color': 'red', 
+                'position': 'relative', 
+                'left': '10vw', 
             });
-        $('.formLabelAge').css('background-color', 'red');
+        $('.formLabelAge').css(
+            {
+                'background-color': 'red',
+                'border-radius': '10px',
+            }
+        );
         return false; // used for boolean value for validation before post API req 
     }
     if ( $('#age').val() > 0 ) {
@@ -139,7 +205,7 @@ const ageValidation = () => {
     }
 
     if ( $('#ageError').length === 0 ) return true; 
-}
+} // end of func
 
 const emailUrls = ['.com', '.co', '.io', '.net', '.edu']
 
@@ -151,9 +217,16 @@ const emailValidation = () => {
             {
                 'text-decoration': 'underline', 
                 'font-style': 'italic',
-                'color': 'red' 
+                'color': 'red', 
+                'position': 'relative', 
+                'left': '10vw', 
             });
-        $('.formLabelEmail').css('background-color', 'red');
+        $('.formLabelEmail').css(
+            {
+                'background-color': 'red',
+                'border-radius': '10px',
+            }
+        );
         return false; // used for boolean value for validation before post API req 
     } 
     if ( $('#email').val().length > 0 ) {
@@ -162,7 +235,7 @@ const emailValidation = () => {
     }
 
     if ( $('#emailError').length === 0 ) return true; 
-}
+} // end of func
 
 const invalidEmailAddress = () => {
     let missingEmailRequirements = 0; 
@@ -178,7 +251,7 @@ const invalidEmailAddress = () => {
     })
 
     return (missingEmailRequirements > 0 ) ? true : false
-}
+} // end of func
 
 const addEventHandler = () => {
     if (formValidated()) { // validates the form before requesting API 
@@ -245,6 +318,9 @@ const demoEventHandler = () => { // iterates seedDB, each obj is sent via post a
             type: 'POST', 
             url: 'http://127.0.0.1:5000/attr',  
             data: dataObj, 
+            success: () => {
+                location.reload() // reloads the page on success 
+            }, 
             error: () => {
                 alert('Something went wrong')
             }
@@ -292,17 +368,27 @@ const pageTable = () => { // table that deals with [{}, {}, {}] DS with each obj
             url: 'http://127.0.0.1:5000/attr', 
             success: dataFromDB => { // data in the form of [{},{},{}]
                 if (dataFromDB.length === 0) {
-                    tableTag.append('<p>No data')
+                    tableTag.append('<p id="noData" class="noData2">No data').css(
+                        {
+                            'display': 'block'
+                        }
+                    )
+                    $('.table').css(
+                        {
+                            'position': 'relative', 
+                            'left': '200px'
+                        }
+                    )
                 } else {
+                    tableTag.remove('.noData2')
                     table_generator_func(dataFromDB)
-                }
+                }            
             }
         })
     })
     $('.table').append(tableTag)
     $('#tableId').on('click', rowSelector4Editing); // selects row data from table to populate on form 
-    $('#tableId').on('click', rowSelectionHighlight); // highlights the row 
-    
+    $('#tableId').on('click', rowSelectionHighlight); // highlights the row     
 } // end of func 
 
 const table_generator_func = data => { // data comes from db 
@@ -332,7 +418,7 @@ const table_generator_func = data => { // data comes from db
         rowID++
         tableTag.append(row);
     });
-}
+} // end of func
 
 let rowID = null // each row on table has an ID
 let dataIDFromDB = null // the ID stored in db to each obj entry in db 
@@ -378,7 +464,7 @@ const nxtRowSelectionHighlight = event => { // highlights the next row onClick
 } // end of func 
 
 const pageLayout = () => {
-    $('.id').append('<table id="layoutTable" border="2"/>')
+    $('.id').append('<table id="layoutTable"/>')
     const parent = document.getElementById('layoutTable')
     const th1 = document.createElement('th');// creates th tag 
     th1.className='form';
@@ -398,13 +484,15 @@ const pageLayoutCss = () => {
             'background-attachment': 'fixed'
         }
     )
-    $('#layoutTable th').css(
+    $('#layoutTable th.form').css(
         {
             'width': '60%', 
             'height': '600px'
         }
     )
-}
+
+    $('#layoutTable th.table').css('border-style', 'solid')
+} // end of func
 
 $(() => {  // this is the same as $('document').ready(function() { ... })
     appLayout = pageLayout();  
