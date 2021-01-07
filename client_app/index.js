@@ -1,23 +1,28 @@
 const form = () => { 
     const formLabels = ['name', 'age', 'email', 'feedback', 'gender']
+    const inputPlaceHolders = ['bobby247', '18', 'abc@ccny.cuny.edu', 'cool']
     $('.form').append('Form')
     $('.form').append(
         `<th class="formColName">field label`, 
         `<th class="formColName">text field`, 
     ) // gives each col a category name 
+    formRowandData(formLabels, inputPlaceHolders)
+    addEventBtns()
+    formCss()
+} // end of func 
+
+const formRowandData = (formLabels, inputPlaceHolders) => {
     $.each(formLabels, (rowIndex, formLabel) => {
         let rowForm = $(`<tr class='${formLabel}'>`); // gives the HTML tr with id attr 
         if ( rowIndex === 4 ) {
             rowForm.append(`<td class='formLabel${formLabel[0].toUpperCase()+ formLabel.slice(1,formLabel.length)}'>${formLabel}</td>`,`<select id="${formLabel}Options">`);
         } else {
-            rowForm.append(`<td class='formLabel${formLabel[0].toUpperCase()+ formLabel.slice(1,formLabel.length)}'>${formLabel}</td>`,`<input id="${formLabel}">`);
+            rowForm.append(`<td class='formLabel${formLabel[0].toUpperCase()+ formLabel.slice(1,formLabel.length)}'>${formLabel}</td>`,`<input id="${formLabel}" placeholder="${inputPlaceHolders[rowIndex]}">`);
         }
         $('.form').append(rowForm);
     });
     $('#genderOptions').append('<option value = "0">Female', '<option  value = "1">Male', '<option value = "2">Other')
-    addEventBtns()
-    formCss()
-} // end of func 
+}
 
 const addEventBtns = () => {
     const labelBtns = ['Add', 'Edit', 'Delete', 'Demo']
@@ -43,8 +48,11 @@ const btnsCss = labelBtns => {
                 'text-align': 'center',
                 'display': 'inline-block',
                 'font-size': '16px',
-                'margin': '4px 5px',
-                'cursor': 'pointer'
+                'margin': '10px 5px',
+                'cursor': 'pointer', 
+                'position': 'relative', 
+                'bottom': '-300px', 
+                'right': '50px'
             }
         )
     })
@@ -377,7 +385,26 @@ const pageLayout = () => {
     const th2 = document.createElement('th');// creates th tag
     th2.className='table';
     parent.append(th1,th2)
+    pageLayoutCss(); 
 } // end of func 
+
+const pageLayoutCss = () => {
+    $('body').css(
+        {
+            'background': 'linear-gradient(#d7fadc, #85d490)',
+            'height': '100%',
+            'margin': '0',
+            'background-repeat': 'no-repeat',
+            'background-attachment': 'fixed'
+        }
+    )
+    $('#layoutTable th').css(
+        {
+            'width': '60%', 
+            'height': '600px'
+        }
+    )
+}
 
 $(() => {  // this is the same as $('document').ready(function() { ... })
     appLayout = pageLayout();  
