@@ -26,11 +26,14 @@ const formTableHeaders = (formColNameClasses, tableHeaders) => {
 const formRowandData = (formLabels, inputPlaceHolders) => {
     $.each(formLabels, (rowIndex, formLabel) => {
         let rowForm = $(`<tr class='${formLabel}'>`); // gives the HTML tr with id attr 
-        if ( rowIndex === 4 ) {
-            rowForm.append(`<td class='formLabel${formLabel[0].toUpperCase()+ formLabel.slice(1,formLabel.length)}'>${formLabel}</td>`,`<select id="${formLabel}Options">`);
-        } else {
-            rowForm.append(`<td class='formLabel${formLabel[0].toUpperCase()+ formLabel.slice(1,formLabel.length)}'>${formLabel}</td>`,`<input id="${formLabel}" placeholder="${inputPlaceHolders[rowIndex]}">`);
+        switch(rowIndex) {
+            case 4:
+                rowForm.append(`<td class='formLabel${formLabel[0].toUpperCase()+ formLabel.slice(1,formLabel.length)}'>${formLabel}</td>`,`<select id="${formLabel}Options">`);
+                break
+            default:
+                rowForm.append(`<td class='formLabel${formLabel[0].toUpperCase()+ formLabel.slice(1,formLabel.length)}'>${formLabel}</td>`,`<input id="${formLabel}" placeholder="${inputPlaceHolders[rowIndex]}">`);
         }
+
         $('.form').append(rowForm);
     });
     $('#genderOptions').append('<option value = "0">Female', '<option  value = "1">Male', '<option value = "2">Other')
@@ -47,10 +50,13 @@ const addEventBtns = () => {
     $('#Delete').on('click', deleteEventHandler);
     $('#Demo').on('click', demoEventHandler);
     $( document ).ajaxComplete( () => { // determines the css style for btns after ajax call 
-        if ( $('#tableId tr').length === 0 ) {
-            noDataBtnsCss(labelBtns)
-        } else {
-            btnsCss(labelBtns)
+        let lengthOfTable = $('#tableId tr').length
+        switch (lengthOfTable) {
+            case 0: 
+                noDataBtnsCss(labelBtns)
+                break 
+            default: 
+                btnsCss(labelBtns)
         }
     })
 } // end of func
@@ -137,24 +143,27 @@ const formValidated = () => {
 
 const nameValidation = () => {
     let nameValue = $('#name').val()
-    if ( $('#nameError').length > 0 ) {
-    } else if ( nameValue === '' ) {
-        $('.name').append('<p id="nameError">Please input a name</p>')
-        $('#nameError').css(
-            {
-                'text-decoration': 'underline', 
-                'font-style': 'italic',
-                'color': 'red', 
-                'position': 'relative', 
-                'left': '10vw', 
-            })
-        $('.formLabelName').css(
-            {
-                'background-color': 'red', 
-                'border-radius': '10px',
-            }
-        );
-        return false; // used for boolean value for validation before post API req 
+    switch(nameValue) {
+        case ($('#nameError').length > 0):
+            break
+        case '':
+            $('.name').append('<p id="nameError">Please input a name</p>')
+            $('#nameError').css(
+                {
+                    'text-decoration': 'underline', 
+                    'font-style': 'italic',
+                    'color': 'red', 
+                    'position': 'relative', 
+                    'left': '10vw', 
+                })
+            $('.formLabelName').css(
+                {
+                    'background-color': 'red', 
+                    'border-radius': '10px',
+                }
+            );
+            return false; // used for boolean value for validation before post API req 
+    
     }
 
     $.each(emailUrls, (idx, emailUrl) => {
@@ -248,7 +257,7 @@ const invalidEmailAddress = () => {
 
     $.each(emailUrls, (idx, emailUrl) => {
         if ( ($('#email').val().includes(emailUrl)) ) {
-            return false 
+            return false // this breaks the loop 
         } else if ( idx === emailUrls.length - 1 ) {
             missingEmailRequirements++;
         }
