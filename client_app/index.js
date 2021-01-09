@@ -45,7 +45,7 @@ const addEventBtns = () => {
     $.each(labelBtns, (idx, labelBtn) => {
         $('.form').append(`<input type="submit" value="${labelBtn}" id="${labelBtn}">`)
     })
-    $('#Add').on('click', addEventHandler); 
+    $('#Add').on('click', textFieldData); 
     $('#Edit').on('click', editEventHandler);
     $('#Delete').on('click', deleteEventHandler);
     $('#Demo').on('click', demoEventHandler);
@@ -124,66 +124,39 @@ const formCss = formLabels => {
     $('table th.form').css('border-spacing', '25px')
 } // end of func
 
-const formValidated = () => {
-    let allValidationReq = 0
-    if ($('#name').val() !== null) { // validation for name 
-        if ( nameValidation() ) allValidationReq ++
+const textFieldData = () => {
+    textFieldDataObj = {
+        "Name":$('#name').val(), 
+        "Age":$('#age').val(), 
+        "Email":$('#email').val(), 
+        "Feedback":$('#feedback').val(),
+        "Gender":$('#genderOptions option:selected').val() 
     }
+    addEventHandler(textFieldDataObj)
+}
 
-    if ($('#age').val() !== null ) { // validation for age 
-        if ( ageValidation() ) allValidationReq ++
-    }
-    
-    if ($('#email').val() !== null) { // validation for email 
-        if ( emailValidation() ) allValidationReq ++
-    }
+const formValidated = (textFieldDataObj) => {
+    return (nameValidation(textFieldDataObj.Name) && ageValidation(textFieldDataObj.Age) && emailValidation(textFieldDataObj.Email) ) ? true : false;
 
-    if ( allValidationReq === 3 ) return true; // used for boolean value for validation before post API req 
 } // end of func 
 
-const nameValidation = () => {
-    let nameValue = $('#name').val()
-    switch(nameValue) {
-        case ($('#nameError').length > 0):
-            break
-        case '':
-            $('.name').append('<p id="nameError">Please input a name</p>')
-            $('#nameError').css(
-                {
-                    'text-decoration': 'underline', 
-                    'font-style': 'italic',
-                    'color': 'red', 
-                    'position': 'relative', 
-                    'left': '10vw', 
-                })
-            $('.formLabelName').css(
-                {
-                    'background-color': 'red', 
-                    'border-radius': '10px',
-                }
-            );
-            return false; // used for boolean value for validation before post API req 
-    
+const errorTypes = ['nameError', 'ageError', 'emailError']; 
+
+const nameValidation = (nameValue) => {
+    // let nameValue = $('#name').val()
+    if ( $('#nameError').length > 0 ) {
+    } else if ( nameValue === '' ) {
+        $('.name').append(`<p id="${errorTypes[0]}">Please input a name</p>`)
+        errorMsgCss(errorTypes[0], 'formLabelName')
+        return false; // used for boolean value for validation before post API req 
     }
 
     $.each(emailUrls, (idx, emailUrl) => {
         let emailUrlIdx = $('#name').val().indexOf(emailUrl)
          if (emailUrlIdx !== -1) {
             $('.name').append('<p id="nameError">Please input a name</p>')
-            $('#nameError').css(
-                {
-                    'text-decoration': 'underline', 
-                    'font-style': 'italic',
-                    'color': 'red', 
-                    'position': 'relative', 
-                    'left': '10vw', 
-                })
-            $('.formLabelName').css(
-                {
-                    'background-color': 'red',
-                    'border-radius': '10px',
-                }
-            );
+            errorMsgCss(errorTypes[0], 'formLabelName')
+
             return false 
         } else if ( emailUrlIdx === -1 && $('#name').val().length > 1 ) {
             $('.formLabelName').css('background-color', '');
@@ -193,28 +166,15 @@ const nameValidation = () => {
     if ( $('#nameError').length === 0 ) return true; 
 } // end of func
 
-const ageValidation = () => {
+const ageValidation = (ageValue) => {
     let onlyNumbers = /^[0-9]+$/ 
     if ( $('#ageError').length > 0 ) {
     } else if (!onlyNumbers.test($('#age').val())) { // validation for age 
-        $('.age').append('<p id="ageError">Please input only numbers for your age')
-        $('#ageError').css(
-            {
-                'text-decoration': 'underline', 
-                'font-style': 'italic',
-                'color': 'red', 
-                'position': 'relative', 
-                'left': '10vw', 
-            });
-        $('.formLabelAge').css(
-            {
-                'background-color': 'red',
-                'border-radius': '10px',
-            }
-        );
+        $('.age').append(`<p id="${errorTypes[1]}">Please input only numbers for your age`)
+        errorMsgCss(errorTypes[1], 'formLabelAge')
         return false; // used for boolean value for validation before post API req 
     }
-    if ( $('#age').val() > 0 ) {
+    if ( ageValue > 0 ) {
         $('.formLabelAge').css('background-color', '');
         $('#ageError').remove();
     }
@@ -222,27 +182,15 @@ const ageValidation = () => {
     if ( $('#ageError').length === 0 ) return true; 
 } // end of func
 
-const emailValidation = () => {
+const emailValidation = (emailValue) => {
     if ( $('#emailError').length > 0 ) {
     } else if ( invalidEmailAddress() ) {
-        $('.email').append('<p id="emailError">Please input a valid email address</p>')
-        $('#emailError').css(
-            {
-                'text-decoration': 'underline', 
-                'font-style': 'italic',
-                'color': 'red', 
-                'position': 'relative', 
-                'left': '10vw', 
-            });
-        $('.formLabelEmail').css(
-            {
-                'background-color': 'red',
-                'border-radius': '10px',
-            }
-        );
+        $('.email').append(`<p id="${errorTypes[2]}">Please input a valid email address</p>`)
+        errorMsgCss(errorTypes[2], 'formLabelEmail')
         return false; // used for boolean value for validation before post API req 
     } 
-    if ( $('#email').val().length > 0 ) {
+    if ( emailValue.length > 0 && !invalidEmailAddress() ) {
+        console.log(emailValue.length > 0 && !invalidEmailAddress());
         $('.formLabelEmail').css('background-color', '');
         $('#emailError').remove();
     }
@@ -266,19 +214,29 @@ const invalidEmailAddress = () => {
     return (missingEmailRequirements > 0 ) ? true : false
 } // end of func
 
-const addEventHandler = () => {
-    if (formValidated()) { // validates the form before requesting API 
-        const dataSent = { // data to be transmitted with post HTTP req 
-            "Name":$('#name').val(), 
-            "Age":$('#age').val(), 
-            "Email":$('#email').val(), 
-            "Feedback":$('#feedback').val(),
-            "Gender":$('#genderOptions option:selected').val()
+const errorMsgCss = ( errorId, formLabelClass) => {
+    $(`#${errorId}`).css(
+        {
+            'text-decoration': 'underline', 
+            'font-style': 'italic',
+            'color': 'red', 
+            'position': 'relative', 
+            'left': '10vw', 
+        })
+    $(`.${formLabelClass}`).css(
+        {
+            'background-color': 'red', 
+            'border-radius': '10px',
         }
+    );
+}
+
+const addEventHandler = (textFieldDataObj) => {
+    if (formValidated(textFieldDataObj)) { // validates the form before requesting API 
         $.ajax({
             type: 'POST', 
             url: 'http://127.0.0.1:5000/attr',  
-            data: dataSent, 
+            data: textFieldDataObj, 
             success: () => {
                 location.reload() // reloads the page on success 
             }, 
@@ -289,19 +247,12 @@ const addEventHandler = () => {
     }
 } // end of func 
 
-const editEventHandler = () => { 
-    if (formValidated()) {
-        const dataSent4Update = {
-            "Name":$('#name').val(), 
-            "Age":$('#age').val(), 
-            "Email":$('#email').val(), 
-            "Feedback":$('#feedback').val(),
-            "Gender":$('#genderOptions option:selected').val()
-        }
+const editEventHandler = (textFieldDataObj) => { 
+    if (formValidated(textFieldDataObj)) {
         $.ajax({
             type: 'PUT', 
             url: `http://127.0.0.1:5000/attr/${dataIDFromDB}`, 
-            data: dataSent4Update, 
+            data: textFieldDataObj, 
             success: () => {
                 location.reload() // reloads the page on success 
             },
