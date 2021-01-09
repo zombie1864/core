@@ -468,7 +468,7 @@ const pageLayoutCss = () => {
 } // end of func
 
 $(() => {  // this is the same as $('document').ready(function() { ... })
-    appLayout = pageLayout();  
-    formCol = form(); 
-    dataTable = pageTable(); 
+    pageLayout();  
+    form(); 
+    pageTable(); 
 }); 
