@@ -45,10 +45,21 @@ const addEventBtns = () => {
     $.each(labelBtns, (idx, labelBtn) => {
         $('.form').append(`<input type="submit" value="${labelBtn}" id="${labelBtn}">`)
     })
-    $('#Add').on('click', textFieldData); 
-    $('#Edit').on('click', editEventHandler);
-    $('#Delete').on('click', deleteEventHandler);
-    $('#Demo').on('click', demoEventHandler);
+    $('#Add, #Edit, #Delete, #Demo').on('click', function() {
+        switch(this.id) {
+            case 'Add':
+                textFieldData(this.id)
+                break 
+            case 'Edit':
+                textFieldData(this.id)
+                break 
+            case 'Delete':
+                deleteEventHandler()
+                break 
+            case 'Demo': 
+                demoEventHandler()
+        }
+    })
     $( document ).ajaxComplete( () => { // determines the css style for btns after ajax call 
         let lengthOfTable = $('#tableId tr').length
         switch (lengthOfTable) {
@@ -124,7 +135,7 @@ const formCss = formLabels => {
     $('table th.form').css('border-spacing', '25px')
 } // end of func
 
-const textFieldData = () => {
+const textFieldData = (labelBtnID) => {
     textFieldDataObj = {
         "Name":$('#name').val(), 
         "Age":$('#age').val(), 
@@ -132,7 +143,13 @@ const textFieldData = () => {
         "Feedback":$('#feedback').val(),
         "Gender":$('#genderOptions option:selected').val() 
     }
-    addEventHandler(textFieldDataObj)
+    switch(labelBtnID) {
+        case 'Add':
+            addEventHandler(textFieldDataObj)
+            break
+        case 'Edit':
+            editEventHandler(textFieldDataObj)
+    }
 }
 
 const formValidated = (textFieldDataObj) => {
@@ -190,7 +207,6 @@ const emailValidation = (emailValue) => {
         return false; // used for boolean value for validation before post API req 
     } 
     if ( emailValue.length > 0 && !invalidEmailAddress() ) {
-        console.log(emailValue.length > 0 && !invalidEmailAddress());
         $('.formLabelEmail').css('background-color', '');
         $('#emailError').remove();
     }
