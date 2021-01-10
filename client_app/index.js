@@ -1,4 +1,5 @@
 const emailUrls = ['.com', '.co', '.io', '.net', '.edu']
+const webUrl = 'http://127.0.0.1:5000/attr'
 let rowID = null // each row on table has an ID
 let dataIDFromDB = null // the ID stored in db to each obj entry in db 
 let currRowToggle = null
@@ -7,7 +8,7 @@ let prevRowToggle = null
 const form = () => { 
     const formLabels = ['name', 'age', 'email', 'feedback', 'gender']
     const inputPlaceHolders = ['bobby247', '18', 'abc@ccny.cuny.edu', 'cool']
-    const formColNameClasses = ['fieldCol', 'textCol']
+    const formColNameClasses = ['fieldCol', 'textCol'] // used to stylize the colName 
     const tableHeaders = ['field label', 'text field']
 
     $('.form').append('Form')
@@ -251,10 +252,18 @@ const addEventHandler = (textFieldDataObj) => {
     if (formValidated(textFieldDataObj)) { // validates the form before requesting API 
         $.ajax({
             type: 'POST', 
-            url: 'http://127.0.0.1:5000/attr',  
-            data: textFieldDataObj, 
+            url: webUrl,  
+            data: textFieldDataObj, // { ... } single obj added to [ {}, {}, ..., {}]
             success: () => {
-                location.reload() // reloads the page on success 
+                // $.get(webUrl, (dataFromDB, status, xhr) => {
+                //     $('<th class="table"/>').remove('#tableId')
+                //     console.log(dataFromDB);
+                //     console.log(typeof dataFromDB);
+                //     const tableTag = $('<table id="tableId"/>');
+                //     tableGeneratorFunc(dataFromDB, tableTag)
+                //     // tableDataGenerator(dataFromDB)
+                // })
+                location.reload()
             }, 
             error: () => {
                 alert('Something went wrong')
@@ -267,10 +276,10 @@ const editEventHandler = (textFieldDataObj) => {
     if (formValidated(textFieldDataObj)) {
         $.ajax({
             type: 'PUT', 
-            url: `http://127.0.0.1:5000/attr/${dataIDFromDB}`, 
+            url: `${webUrl + '/' + dataIDFromDB}`, 
             data: textFieldDataObj, 
             success: () => {
-                location.reload() // reloads the page on success 
+                // location.reload() // reloads the page on success 
             },
             error: () => {
                 alert('Something went wrong')
@@ -282,7 +291,7 @@ const editEventHandler = (textFieldDataObj) => {
 const deleteEventHandler = () => {
     $.ajax({
         type: 'DELETE', 
-        url: `http://127.0.0.1:5000/attr/${dataIDFromDB}`, 
+        url: `${webUrl + '/' + dataIDFromDB}`, 
         success: () => {
             location.reload() // reloads the page on success 
         }, 
@@ -296,7 +305,7 @@ const demoEventHandler = () => { // iterates seedDB, each obj is sent via post a
     $.each( seedDB, (idx, dataObj) => {
         $.ajax({
             type: 'POST', 
-            url: 'http://127.0.0.1:5000/attr',  
+            url: webUrl,  
             data: dataObj, 
             success: () => {
                 location.reload() // reloads the page on success 
@@ -340,12 +349,12 @@ const seedDB = [ // seeds the db with some dummy data
 ]
 
 const pageTable = () => { // table that deals with [{}, {}, {}] DS with each obj being a row 
-const tableTag = $('<table id="tableId"/>');
+    const tableTag = $('<table id="tableId"/>');
     $( () => {
         $.ajax({
             type: 'GET', 
-            url: 'http://127.0.0.1:5000/attr', 
-            success: dataFromDB => { // data in the form of [{},{},{}]
+            url: webUrl, 
+            success: dataFromDB => { // data taken from db in the form of [{},{},{}]
                 if (dataFromDB.length === 0) {
                     tableTag.append('<p id="noData" class="noData2">No data').css(
                         {
@@ -360,7 +369,7 @@ const tableTag = $('<table id="tableId"/>');
                     )
                 } else {
                     tableTag.remove('.noData2')
-                    table_generator_func(dataFromDB, tableTag)
+                    tableGeneratorFunc(dataFromDB, tableTag)
                 }            
             }
         })
@@ -370,24 +379,28 @@ const tableTag = $('<table id="tableId"/>');
     $('#tableId').on('click', rowSelectionHighlight); // highlights the row     
 } // end of func 
 
-const table_generator_func = (data, tableTag) => { // data comes from db 
-    let rowID = 1;
-    let keys = Object.keys(data[0]) // gives the keys from obj 
+const tableGeneratorFunc = (dataFromDB, tableTag) => { // data comes from db [ {}, {}, {} ]
+    colNameGenerator(dataFromDB, tableTag) // generates the colNames for the table 
+    tableDataGenerator(dataFromDB) // generates the data that is display to the table 
+} // end of func
+
+const colNameGenerator = (dataFromDB, tableTag) => {
+    let keys = Object.keys(dataFromDB[0]) // gives the keys from obj 
     tableTag.append('Table').css('display', 'block')
-    tableTag.append(
-        `<th class="colName">${keys[0]}`, 
-        `<th class="colName">${keys[1]}`, 
-        `<th class="colName">${keys[2]}`, 
-        `<th class="colName">${keys[3]}`, 
-        `<th class="colName">${keys[4]}`, 
-        `<th class="colName">${keys[5]}`
-    ) // gives each col a category name 
+    $.each(keys, (idx, key) => {
+        tableTag.append(`<th class="colName">${key}`) // gives each col a category name 
+    })
     $('.colName').css( // stylized col
         {
             'text-decoration': 'underline', 
             'font-style': 'italic',
-        });
-    $.each(data, (rowIdx, rowElObj) => {
+        }
+    );
+}
+
+const tableDataGenerator = (dataFromDB) => { // data is [ {}, {}, {} ]
+    let rowID = 1;
+    $.each(dataFromDB, (rowIdx, rowElObj) => {
         let row = $(`<tr id='${rowIdx}'/>`); // gives the HTML tr with id attr 
         $.each(rowElObj, (key, val) => { 
             row.append(
@@ -395,17 +408,18 @@ const table_generator_func = (data, tableTag) => { // data comes from db
             );
         });
         rowID++
-        tableTag.append(row);
+        $('#tableId').append(row);
     });
-} // end of func
+}
 
 const rowSelector4Editing = event => {  
     let idValue = $(event.target).attr('class') //gets idValue from class attr 
     rowID = idValue 
     $.ajax({
         type: 'GET', 
-        url: 'http://127.0.0.1:5000/attr',
+        url: webUrl,
         success: data => {
+            // console.log(data);
             let idx = rowID -1; // starts idx at 0 rather than 1 
             dataValuesArray = Object.values(data[ idx ]) // selects values for any data[ idx ] into arr
             dataIDFromDB = dataValuesArray[5] // assigns var to id value from db globally 
@@ -414,6 +428,9 @@ const rowSelector4Editing = event => {
             $('#genderOptions').val(dataValuesArray[3]) // fill in dataValue to form entry
             $('#email').val(dataValuesArray[1]) // fill in dataValue to form entry
             $('#feedback').val(dataValuesArray[2]) // fill in dataValue to form entry
+        },
+        error: (errMsg) => {
+            console.log(errMsg);
         }
     })
 } // end of func 
