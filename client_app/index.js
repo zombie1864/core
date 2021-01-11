@@ -137,6 +137,10 @@ const formCss = formLabels => {
     $('table th.form').css('border-spacing', '25px')
 } // end of func
 
+/*****************************************************************************/
+// ---------------------------------[ FORM VALIDATION ]---------------------------------
+/*****************************************************************************/
+
 const textFieldData = (labelBtnID) => { // creates the data obj from input for adding or editing 
     textFieldDataObj = {
         "Name":$('#name').val(), 
@@ -244,6 +248,10 @@ const errorMsgCss = ( errorId, formLabelClass) => {
         }
     );
 }
+
+/*****************************************************************************/
+// ---------------------------------[ BtnsEventHandlers ]---------------------------------
+/*****************************************************************************/
 
 const addEventHandler = (textFieldDataObj) => {
     if (formValidated(textFieldDataObj)) { // validates the form before requesting API 
@@ -359,6 +367,9 @@ const seedDB = [ // seeds the db with some dummy data
         'Name': "amy"
     }
 ]
+/*****************************************************************************/
+// ---------------------------------[ TABLE ]---------------------------------
+/*****************************************************************************/
 
 const pageTable = () => { // table that deals with [{}, {}, {}] DS with each obj being a row 
     const tableTag = $('<table id="tableId"/>');
@@ -416,7 +427,7 @@ const tableDataGenerator = (dataFromDB) => { // data is [ {}, {}, {} ]
         let row = $(`<tr id='${rowIdx}' class="dataElFromDB"/>`); // gives the HTML tr with id attr 
         $.each(rowElObj, (key, val) => { 
             row.append(
-                $(`<td class='${rowID}' />`).text(val) 
+                $(`<td class='${key + rowID}' />`).text(val) 
             );
         });
         rowID++
@@ -425,30 +436,24 @@ const tableDataGenerator = (dataFromDB) => { // data is [ {}, {}, {} ]
 }
 
 const rowSelector4Editing = event => {  
-    let idValue = $(event.target).attr('class') //gets idValue from class attr 
-    rowID = idValue 
-    $.ajax({
-        type: 'GET', 
-        url: webUrl,
-        success: data => {
-            // console.log(data);
-            let idx = rowID -1; // starts idx at 0 rather than 1 
-            dataValuesArray = Object.values(data[ idx ]) // selects values for any data[ idx ] into arr
-            dataIDFromDB = dataValuesArray[5] // assigns var to id value from db globally 
-            $('#name').val(dataValuesArray[4]) // fill in dataValue to form entry
-            $('#age').val(dataValuesArray[0]) // fill in dataValue to form entry
-            $('#genderOptions').val(dataValuesArray[3]) // fill in dataValue to form entry
-            $('#email').val(dataValuesArray[1]) // fill in dataValue to form entry
-            $('#feedback').val(dataValuesArray[2]) // fill in dataValue to form entry
-        },
-        error: (errMsg) => {
-            $('.id').append(`<div>${errMsg}`)
-        }
+    let trIdValue = $(event.target).closest('tr').attr('id') // returns the id from tr 
+    let trClassId = $(`.id${parseInt(trIdValue) + 1}`).html() // returns the id from td 
+    dataIDFromDB = trClassId
+
+    $.each( formLabels, (idx, formLabel) => {
+        let dataForSelection = $(`.${
+            formLabel[0].toUpperCase()+ 
+            formLabel.slice(1,formLabel.length) + 
+            (parseInt(trIdValue) + 1) 
+        }`).html()
+
+        $(`#${formLabel}`).val(`${dataForSelection}`)
+        if ( idx === formLabels.length - 1 ) $(`#${formLabel}Options`).val(`${dataForSelection}`) // populates inputs with td values 
     })
 } // end of func 
 
 const rowSelectionHighlight = event => { // highlights the currRow onClick 
-    let idValue = $(event.target).attr('class') // gives the idValue of currTarget 
+    let idValue = $(event.target).attr('class').slice(-1) // gives the idValue of currTarget 
     let rowIndex = idValue - 1; // starts rowIndex at 0 rather than 1 
     currRowToggle = $(`#${rowIndex}`) // current rowIndex from []
     if (currRowToggle !== null && prevRowToggle === null ) {
@@ -460,7 +465,7 @@ const rowSelectionHighlight = event => { // highlights the currRow onClick
 } // end of func 
 
 const nxtRowSelectionHighlight = event => { // highlights the next row onClick 
-    let idValue = $(event.target).attr('class') // gives the idValue of currTarget 
+    let idValue = $(event.target).attr('class').slice(-1) // gives the idValue of currTarget 
     let rowIndex = idValue - 1; // starts rowIndex at 0 rather than 1 
     $(`#${rowIndex}`).css('background-color', 'yellow');
 } // end of func 
