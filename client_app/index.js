@@ -1,4 +1,6 @@
 const emailUrls = ['.com', '.co', '.io', '.net', '.edu']
+const errorTypes = ['nameError', 'ageError', 'emailError']; 
+const formLabels = ['name', 'age', 'email', 'feedback', 'gender']
 const webUrl = 'http://127.0.0.1:5000/attr'
 let rowID = null // each row on table has an ID
 let dataIDFromDB = null // the ID stored in db to each obj entry in db 
@@ -6,7 +8,6 @@ let currRowToggle = null
 let prevRowToggle = null
 
 const form = () => { 
-    const formLabels = ['name', 'age', 'email', 'feedback', 'gender']
     const inputPlaceHolders = ['bobby247', '18', 'abc@ccny.cuny.edu', 'cool']
     const formColNameClasses = ['fieldCol', 'textCol'] // used to stylize the colName 
     const tableHeaders = ['field label', 'text field']
@@ -136,7 +137,7 @@ const formCss = formLabels => {
     $('table th.form').css('border-spacing', '25px')
 } // end of func
 
-const textFieldData = (labelBtnID) => {
+const textFieldData = (labelBtnID) => { // creates the data obj from input for adding or editing 
     textFieldDataObj = {
         "Name":$('#name').val(), 
         "Age":$('#age').val(), 
@@ -144,24 +145,20 @@ const textFieldData = (labelBtnID) => {
         "Feedback":$('#feedback').val(),
         "Gender":$('#genderOptions option:selected').val() 
     }
-    switch(labelBtnID) {
+    switch(labelBtnID) { // based on ID data obj will be added or edited 
         case 'Add':
             addEventHandler(textFieldDataObj)
             break
         case 'Edit':
             editEventHandler(textFieldDataObj)
     }
-}
+} // end of func 
 
 const formValidated = (textFieldDataObj) => {
     return (nameValidation(textFieldDataObj.Name) && ageValidation(textFieldDataObj.Age) && emailValidation(textFieldDataObj.Email) ) ? true : false;
-
 } // end of func 
 
-const errorTypes = ['nameError', 'ageError', 'emailError']; 
-
 const nameValidation = (nameValue) => {
-    // let nameValue = $('#name').val()
     if ( $('#nameError').length > 0 ) {
     } else if ( nameValue === '' ) {
         $('.name').append(`<p id="${errorTypes[0]}">Please input a name</p>`)
@@ -255,18 +252,16 @@ const addEventHandler = (textFieldDataObj) => {
             url: webUrl,  
             data: textFieldDataObj, // { ... } single obj added to [ {}, {}, ..., {}]
             success: () => {
-                // $.get(webUrl, (dataFromDB, status, xhr) => {
-                //     $('<th class="table"/>').remove('#tableId')
-                //     console.log(dataFromDB);
-                //     console.log(typeof dataFromDB);
-                //     const tableTag = $('<table id="tableId"/>');
-                //     tableGeneratorFunc(dataFromDB, tableTag)
-                //     // tableDataGenerator(dataFromDB)
-                // })
-                location.reload()
+                $.get(webUrl, (dataFromDB) => {
+                    $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
+                    tableDataGenerator(dataFromDB) // generates the rows for the table 
+                    $.each( formLabels, (idx, formlabel) => {
+                        $(`#${formlabel}`).val('') // clears the input fields 
+                    })
+                })
             }, 
-            error: () => {
-                alert('Something went wrong')
+            error: (errMsg) => {
+                $('.id').append(`<div>${errMsg}`)
             }
         })
     }
@@ -279,10 +274,16 @@ const editEventHandler = (textFieldDataObj) => {
             url: `${webUrl + '/' + dataIDFromDB}`, 
             data: textFieldDataObj, 
             success: () => {
-                // location.reload() // reloads the page on success 
+                $.get(webUrl, (dataFromDB) => {
+                    $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
+                    tableDataGenerator(dataFromDB) // generates the rows for the table 
+                    $.each( formLabels, (idx, formlabel) => {
+                        $(`#${formlabel}`).val('') // clears the input fields 
+                    })
+                })
             },
-            error: () => {
-                alert('Something went wrong')
+            error: (errMsg) => {
+                $('.id').append(`<div>${errMsg}`)
             }
         })
     }
@@ -293,10 +294,15 @@ const deleteEventHandler = () => {
         type: 'DELETE', 
         url: `${webUrl + '/' + dataIDFromDB}`, 
         success: () => {
-            location.reload() // reloads the page on success 
-        }, 
-        error: () => {
-            alert('Something went wrong')
+            $.get(webUrl, (dataFromDB) => {
+                $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
+                tableDataGenerator(dataFromDB) // generates the rows for the table 
+                $.each( formLabels, (idx, formlabel) => {
+                    $(`#${formlabel}`).val('') // clears the input fields 
+                })
+            })        }, 
+        error: (errMsg) => {
+            $('.id').append(`<div>${errMsg}`)
         }
     })
 } // end of func 
@@ -308,10 +314,16 @@ const demoEventHandler = () => { // iterates seedDB, each obj is sent via post a
             url: webUrl,  
             data: dataObj, 
             success: () => {
-                location.reload() // reloads the page on success 
+                $.get(webUrl, (dataFromDB) => {
+                    $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
+                    tableDataGenerator(dataFromDB) // generates the rows for the table 
+                    $.each( formLabels, (idx, formlabel) => {
+                        $(`#${formlabel}`).val('') // clears the input fields 
+                    })
+                })            
             }, 
-            error: () => {
-                alert('Something went wrong')
+            error: (errMsg) => {
+                $('.id').append(`<div>${errMsg}`)
             }
         })
     }) 
@@ -401,7 +413,7 @@ const colNameGenerator = (dataFromDB, tableTag) => {
 const tableDataGenerator = (dataFromDB) => { // data is [ {}, {}, {} ]
     let rowID = 1;
     $.each(dataFromDB, (rowIdx, rowElObj) => {
-        let row = $(`<tr id='${rowIdx}'/>`); // gives the HTML tr with id attr 
+        let row = $(`<tr id='${rowIdx}' class="dataElFromDB"/>`); // gives the HTML tr with id attr 
         $.each(rowElObj, (key, val) => { 
             row.append(
                 $(`<td class='${rowID}' />`).text(val) 
@@ -430,7 +442,7 @@ const rowSelector4Editing = event => {
             $('#feedback').val(dataValuesArray[2]) // fill in dataValue to form entry
         },
         error: (errMsg) => {
-            console.log(errMsg);
+            $('.id').append(`<div>${errMsg}`)
         }
     })
 } // end of func 
@@ -455,12 +467,9 @@ const nxtRowSelectionHighlight = event => { // highlights the next row onClick
 
 const pageLayout = () => {
     $('.id').append('<table id="layoutTable"/>')
-    const parent = document.getElementById('layoutTable')
-    const th1 = document.createElement('th');// creates th tag 
-    th1.className='form';
-    const th2 = document.createElement('th');// creates th tag
-    th2.className='table';
-    parent.append(th1,th2)
+    const th1 = $('<th class="form">');// creates th tag 
+    const th2 = $('<th class="table">');// creates th tag
+    $('#layoutTable').append(th1,th2)
     pageLayoutCss(); 
 } // end of func 
 
