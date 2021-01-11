@@ -277,7 +277,6 @@ const addEventHandler = (textFieldDataObj) => {
 
 const editEventHandler = (textFieldDataObj) => { 
     if (formValidated(textFieldDataObj)) {
-        console.log(textFieldDataObj);
         $.ajax({
             type: 'PUT', 
             url: `${webUrl + '/' + dataIDFromDB}`, 
@@ -438,6 +437,8 @@ const tableDataGenerator = (dataFromDB) => { // data is [ {}, {}, {} ]
 
 const rowSelector4Editing = event => {  
     let trIdValue = $(event.target).closest('tr').attr('id') // returns the id from tr 
+    let trClassId = $(`.id${parseInt(trIdValue) + 1}`).html() // returns the id from td 
+    dataIDFromDB = trClassId
 
     $.each( formLabels, (idx, formLabel) => {
         let dataForSelection = $(`.${
