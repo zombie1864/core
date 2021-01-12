@@ -498,6 +498,42 @@ const pageLayoutCss = () => {
     $('#layoutTable th.table').css('border-style', 'solid')
 } // end of func
 
+/*****************************************************************************/
+// ---------------------------------[ Unit Testing ]---------------------------------
+/*****************************************************************************/
+
+const _test_validate = () => {
+    describe('nameValidation', () => {
+        it ( 'returns false if the string is empty', () => {
+                expect(nameValidation('').toBe(false))
+        }) 
+
+        it ( 'returns false if the string contains an email url', () => {
+            expects(nameValidation('bobby247@gmail.com').toBe(false))
+        })
+    })
+
+    describe('ageValidation', () => {
+        it ( 'returns false if age is not a number', () => {
+            expects(ageValidation('karl').toBe(false))
+        })
+    })
+
+    describe('emailValidation', () => {
+        it ( 'requires email to have "@"', () => {
+            expects(invalidEmailAddress('abcccy.cuny.edu').toEqual(-1))
+        })
+
+        it ( 'requires email to have valid email url address', () => {
+            expects(invalidEmailAddress('abc@ccny.cuny').toEqual(-1))
+        })
+
+        it ( 'if email is valid and emailError msg is removed', () => {
+            expects(emailValidation('abc@ccny.cuny.edu').toBe(true))
+        })
+    })
+}
+
 $(() => {  // this is the same as $('document').ready(function() { ... })
     pageLayout();  
     form(); 
