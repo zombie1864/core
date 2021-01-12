@@ -2,6 +2,7 @@ const emailUrls = ['.com', '.co', '.io', '.net', '.edu']
 const errorTypes = ['nameError', 'ageError', 'emailError']; 
 const formLabels = ['name', 'age', 'email', 'feedback', 'gender']
 const webUrl = 'http://127.0.0.1:5000/attr'
+const tableTag = $('<table id="tableId"/>');
 let rowID = null // each row on table has an ID
 let dataIDFromDB = null // the ID stored in db to each obj entry in db 
 let currRowToggle = null
@@ -261,8 +262,13 @@ const addEventHandler = (textFieldDataObj) => {
             data: textFieldDataObj, // { ... } single obj added to [ {}, {}, ..., {}]
             success: () => {
                 $.get(webUrl, (dataFromDB) => {
-                    $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
-                    tableDataGenerator(dataFromDB) // generates the rows for the table 
+                    if ( $('.table').find('tr').length === 0 ) {
+                        $('.noData2').remove()
+                        tableGeneratorFunc(dataFromDB, tableTag)
+                    } else {
+                        $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
+                        tableDataGenerator(dataFromDB) // generates the rows for the table 
+                    }
                     $.each( formLabels, (idx, formlabel) => {
                         $(`#${formlabel}`).val('') // clears the input fields 
                     })
@@ -305,7 +311,7 @@ const deleteEventHandler = () => {
             $.get(webUrl, (dataFromDB) => {
                 $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
                 if (dataFromDB.length === 0) { 
-                    emptyDB_CSS($('<table id="tableId"/>')) 
+                    emptyDB_CSS(tableTag) 
                 } else {
                     tableDataGenerator(dataFromDB) // generates the rows for the table 
                 }
@@ -327,8 +333,13 @@ const demoEventHandler = () => { // iterates seedDB, each obj is sent via post a
             data: dataObj, 
             success: () => {
                 $.get(webUrl, (dataFromDB) => {
-                    $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
-                    tableDataGenerator(dataFromDB) // generates the rows for the table 
+                    if ( $('.table').find('tr').length === 0 ) {
+                        $('.noData2').remove()
+                        tableGeneratorFunc(dataFromDB, tableTag)
+                    } else {
+                        $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
+                        tableDataGenerator(dataFromDB) // generates the rows for the table 
+                    }
                     $.each( formLabels, (idx, formlabel) => {
                         $(`#${formlabel}`).val('') // clears the input fields 
                     })
@@ -376,7 +387,6 @@ const seedDB = [ // seeds the db with some dummy data
 /*****************************************************************************/
 
 const pageTable = () => { // table that deals with [{}, {}, {}] DS with each obj being a row 
-    const tableTag = $('<table id="tableId"/>');
     $( () => {
         $.ajax({
             type: 'GET', 
