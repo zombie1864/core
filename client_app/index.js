@@ -254,7 +254,6 @@ const errorMsgCss = ( errorId, formLabelClass) => {
 /*****************************************************************************/
 
 const addEventHandler = (textFieldDataObj) => {
-    _test_validate()
     if (formValidated(textFieldDataObj)) { // validates the form before requesting API 
         $.ajax({
             type: 'POST', 
@@ -305,7 +304,11 @@ const deleteEventHandler = () => {
         success: () => {
             $.get(webUrl, (dataFromDB) => {
                 $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
-                tableDataGenerator(dataFromDB) // generates the rows for the table 
+                if (dataFromDB.length === 0) { 
+                    emptyDB_CSS($('<table id="tableId"/>')) 
+                } else {
+                    tableDataGenerator(dataFromDB) // generates the rows for the table 
+                }
                 $.each( formLabels, (idx, formlabel) => {
                     $(`#${formlabel}`).val('') // clears the input fields 
                 })
@@ -380,17 +383,7 @@ const pageTable = () => { // table that deals with [{}, {}, {}] DS with each obj
             url: webUrl, 
             success: dataFromDB => { // data taken from db in the form of [{},{},{}]
                 if (dataFromDB.length === 0) {
-                    tableTag.append('<p id="noData" class="noData2">No data').css(
-                        {
-                            'display': 'block'
-                        }
-                    )
-                    $('.table').css(
-                        {
-                            'position': 'relative', 
-                            'left': '200px'
-                        }
-                    )
+                    emptyDB_CSS(tableTag)
                 } else {
                     tableTag.remove('.noData2')
                     tableGeneratorFunc(dataFromDB, tableTag)
@@ -402,6 +395,20 @@ const pageTable = () => { // table that deals with [{}, {}, {}] DS with each obj
     $('#tableId').on('click', rowSelector4Editing); // selects row data from table to populate on form 
     $('#tableId').on('click', rowSelectionHighlight); // highlights the row     
 } // end of func 
+
+const emptyDB_CSS = tableTag => {
+    tableTag.append('<p id="noData" class="noData2">No data').css(
+        {
+            'display': 'block'
+        }
+    )
+    $('.table').css(
+        {
+            'position': 'relative', 
+            'left': '200px'
+        }
+    )
+}
 
 const tableGeneratorFunc = (dataFromDB, tableTag) => { // data comes from db [ {}, {}, {} ]
     colNameGenerator(dataFromDB, tableTag) // generates the colNames for the table 
