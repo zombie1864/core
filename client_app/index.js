@@ -519,8 +519,13 @@ const pageLayoutCss = () => {
 /*****************************************************************************/
 // ---------------------------------[ Unit Testing ]---------------------------------
 /*****************************************************************************/
-
-const _test_validate = () => {
+const arr = [
+    {
+        'input': [{'Name': 'bob'}, {'Name': 'jack'}],
+        'output': [false,  true]// should be consistent if boolean output should be boolean 
+    }
+]
+const _test_validate = (arr) => {
     try {
         if ($('#name').val() === '')throw 'name cannot be empty'
         if ($('#age').val() <= 0 ) throw 'invalid number'
@@ -542,4 +547,5 @@ $(() => {  // this is the same as $('document').ready(function() { ... })
     pageLayout();  
     form(); 
     pageTable(); 
+    _test_validate()
 }); 
