@@ -254,6 +254,7 @@ const errorMsgCss = ( errorId, formLabelClass) => {
 /*****************************************************************************/
 
 const addEventHandler = (textFieldDataObj) => {
+    _test_validate()
     if (formValidated(textFieldDataObj)) { // validates the form before requesting API 
         $.ajax({
             type: 'POST', 
@@ -503,35 +504,21 @@ const pageLayoutCss = () => {
 /*****************************************************************************/
 
 const _test_validate = () => {
-    describe('nameValidation', () => {
-        it ( 'returns false if the string is empty', () => {
-                expect(nameValidation('').toBe(false))
-        }) 
-
-        it ( 'returns false if the string contains an email url', () => {
-            expects(nameValidation('bobby247@gmail.com').toBe(false))
+    try {
+        if ($('#name').val() === '')throw 'name cannot be empty'
+        if ($('#age').val() <= 0 ) throw 'invalid number'
+        if (!(/^[0-9]+$/).test($('#age').val())) throw 'not a number'
+        if ($('#email').val().indexOf('@') === -1 ) throw 'email must have "@"'
+        let validEmailUrl = false 
+        $.each(emailUrls, (idx, emailUrl) => {
+             if ( $('#email').val().includes(emailUrl) ) {
+                validEmailUrl = true 
+            }
         })
-    })
-
-    describe('ageValidation', () => {
-        it ( 'returns false if age is not a number', () => {
-            expects(ageValidation('karl').toBe(false))
-        })
-    })
-
-    describe('emailValidation', () => {
-        it ( 'requires email to have "@"', () => {
-            expects(invalidEmailAddress('abcccy.cuny.edu').toEqual(-1))
-        })
-
-        it ( 'requires email to have valid email url address', () => {
-            expects(invalidEmailAddress('abc@ccny.cuny').toEqual(-1))
-        })
-
-        it ( 'if email is valid and emailError msg is removed', () => {
-            expects(emailValidation('abc@ccny.cuny.edu').toBe(true))
-        })
-    })
+        if (!validEmailUrl ) throw 'email must conatin a valid email url '
+    } catch (err) {
+        console.log(err);
+    }
 }
 
 $(() => {  // this is the same as $('document').ready(function() { ... })
