@@ -1,6 +1,6 @@
 const emailUrls = ['.com', '.co', '.io', '.net', '.edu']
 const errorTypes = ['nameError', 'ageError', 'emailError']; 
-const formLabels = ['name', 'age', 'email', 'feedback', 'gender']
+const formLabels = ['Name', 'Age', 'Email', 'Feedback', 'Gender']
 const webUrl = 'http://127.0.0.1:5000/attr'
 const tableTag = $('<table id="tableId"/>');
 let rowID = null // each row on table has an ID
@@ -39,7 +39,7 @@ const formRowandData = (formLabels, inputPlaceHolders) => {
 
         $('.form').append(rowForm);
     });
-    $('#genderOptions').append('<option value = "0">Female', '<option  value = "1">Male', '<option value = "2">Other')
+    $('#GenderOptions').append('<option value = "0">Female', '<option  value = "1">Male', '<option value = "2">Other')
 } // end of func
 
 const addEventBtns = () => {
@@ -128,7 +128,7 @@ const formCss = formLabels => {
         }
     );
     $.each(formLabels, (idx, formLabel) => {
-        $(`#${formLabel}, #genderOptions, .formLabel${formLabel[0].toUpperCase()+ formLabel.slice(1,formLabel.length)}`).css(
+        $(`#${formLabel}, #GenderOptions, .formLabel${formLabel[0].toUpperCase()+ formLabel.slice(1,formLabel.length)}`).css(
             {
                 'position': 'relative', 
                 'left': '10vw',     
@@ -143,12 +143,12 @@ const formCss = formLabels => {
 /*****************************************************************************/
 
 const textFieldData = (labelBtnID) => { // creates the data obj from input for adding or editing 
-    textFieldDataObj = {
-        "Name":$('#name').val(), 
-        "Age":$('#age').val(), 
-        "Email":$('#email').val(), 
-        "Feedback":$('#feedback').val(),
-        "Gender":$('#genderOptions option:selected').val() 
+    textFieldDataObj = { // graps the data from the text fields 
+        "Name":$('#Name').val(), 
+        "Age":$('#Age').val(), 
+        "Email":$('#Email').val(), 
+        "Feedback":$('#Feedback').val(),
+        "Gender":$('#GenderOptions option:selected').val() 
     }
     switch(labelBtnID) { // based on ID data obj will be added or edited 
         case 'Add':
@@ -166,19 +166,19 @@ const formValidated = (textFieldDataObj) => {
 const nameValidation = (nameValue) => {
     if ( $('#nameError').length > 0 ) {
     } else if ( nameValue === '' ) {
-        $('.name').append(`<p id="${errorTypes[0]}">Please input a name</p>`)
+        $('.Name').append(`<p id="${errorTypes[0]}">Please input a name</p>`)
         errorMsgCss(errorTypes[0], 'formLabelName')
         return false; // used for boolean value for validation before post API req 
     }
 
     $.each(emailUrls, (idx, emailUrl) => {
-        let emailUrlIdx = $('#name').val().indexOf(emailUrl)
+        let emailUrlIdx = $('#Name').val().indexOf(emailUrl)
          if (emailUrlIdx !== -1) {
-            $('.name').append('<p id="nameError">Please input a name</p>')
+            $('.Name').append('<p id="nameError">Please input a name</p>')
             errorMsgCss(errorTypes[0], 'formLabelName')
 
             return false 
-        } else if ( emailUrlIdx === -1 && $('#name').val().length > 1 ) {
+        } else if ( emailUrlIdx === -1 && $('#Name').val().length > 1 ) {
             $('.formLabelName').css('background-color', '');
             $('#nameError').remove();
         }
@@ -189,8 +189,8 @@ const nameValidation = (nameValue) => {
 const ageValidation = (ageValue) => {
     let onlyNumbers = /^[0-9]+$/ 
     if ( $('#ageError').length > 0 ) {
-    } else if (!onlyNumbers.test($('#age').val())) { // validation for age 
-        $('.age').append(`<p id="${errorTypes[1]}">Please input only numbers for your age`)
+    } else if (!onlyNumbers.test($('#Age').val())) { // validation for age 
+        $('.Age').append(`<p id="${errorTypes[1]}">Please input only numbers for your age`)
         errorMsgCss(errorTypes[1], 'formLabelAge')
         return false; // used for boolean value for validation before post API req 
     }
@@ -205,7 +205,7 @@ const ageValidation = (ageValue) => {
 const emailValidation = (emailValue) => {
     if ( $('#emailError').length > 0 ) {
     } else if ( invalidEmailAddress() ) {
-        $('.email').append(`<p id="${errorTypes[2]}">Please input a valid email address</p>`)
+        $('.Email').append(`<p id="${errorTypes[2]}">Please input a valid email address</p>`)
         errorMsgCss(errorTypes[2], 'formLabelEmail')
         return false; // used for boolean value for validation before post API req 
     } 
@@ -220,10 +220,10 @@ const emailValidation = (emailValue) => {
 const invalidEmailAddress = () => {
     let missingEmailRequirements = 0; 
 
-    if ( $('#email').val().indexOf('@') === -1  ) missingEmailRequirements++; 
+    if ( $('#Email').val().indexOf('@') === -1  ) missingEmailRequirements++; 
 
     $.each(emailUrls, (idx, emailUrl) => {
-        if ( ($('#email').val().includes(emailUrl)) ) {
+        if ( ($('#Email').val().includes(emailUrl)) ) {
             return false // this breaks the loop 
         } else if ( idx === emailUrls.length - 1 ) {
             missingEmailRequirements++;
@@ -519,33 +519,77 @@ const pageLayoutCss = () => {
 /*****************************************************************************/
 // ---------------------------------[ Unit Testing ]---------------------------------
 /*****************************************************************************/
-const arr = [
-    {
-        'input': [{'Name': 'bob'}, {'Name': 'jack'}],
-        'output': [false,  true]// should be consistent if boolean output should be boolean 
-    }
-]
-const _test_validate = (arr) => {
-    try {
-        if ($('#name').val() === '')throw 'name cannot be empty'
-        if ($('#age').val() <= 0 ) throw 'invalid number'
-        if (!(/^[0-9]+$/).test($('#age').val())) throw 'not a number'
-        if ($('#email').val().indexOf('@') === -1 ) throw 'email must have "@"'
-        let validEmailUrl = false 
-        $.each(emailUrls, (idx, emailUrl) => {
-             if ( $('#email').val().includes(emailUrl) ) {
-                validEmailUrl = true 
-            }
+const testCases = {
+    'input': [ // test cases 
+        {
+            "Name" : '12', // false 
+            "Age" : 'Karl', 
+            "Email" : 'Pie', 
+            "Feedback" : 'Yay!', 
+            "Gender" : '1'
+        }, 
+        {
+            "Name" : 'Jimmy', // true 
+            "Age" : '12', 
+            "Email" : 'Neutron@nick.com', 
+            "Feedback" : 'Gotta blast!', 
+            "Gender" : '1'
+        }, 
+        {
+            "Name" : 'Sheen', // false 
+            "Age" : '12', 
+            "Email" : 'Sheen100gmail.com', 
+            "Feedback" : 'Ultra lord!', 
+            "Gender" : '1'
+        }, 
+        {
+            "Name" : 'spongbob', // false 
+            "Age" : '22', 
+            "Email" : null, 
+            "Feedback" : 'FUN!', 
+            "Gender" : '1'
+        }, 
+        {
+            'Name': 'Patrick24', // true 
+            'Age': '22', 
+            'Email': 'pat@underRock.edu', 
+            'Feedback': 'My mind is an egima!', 
+            'Gender': '2'
+        }
+    ],
+    'output': [ false, true, false, false, true ] // predicted outcomes  
+}
+
+const _test_ = method => {
+    const arrOfInputs = testCases.input, // graps the input [{}, {}, {}]
+          arrOfOutputs = testCases.output // graps the output [ boolean ]
+    $.each(arrOfInputs, (idx, inputObj) => { // iterates thr arrOfInputs 
+        $.each( inputObj, (key, val) => { // iterates thr Obj 
+            key === "Gender" ? $(`#${key}Options`).val(val) : $(`#${key}`).val(val) // populates the text field with data
         })
-        if (!validEmailUrl ) throw 'email must conatin a valid email url '
-    } catch (err) {
-        console.log(err);
-    }
+        textFieldDataObj = { // graps the data from the text fields 
+            "Name":$('#Name').val(), 
+            "Age":$('#Age').val(), 
+            "Email":$('#Email').val(), 
+            "Feedback":$('#Feedback').val(),
+            "Gender":$('#GenderOptions option:selected').val() 
+        }
+        console.log(idx, method(textFieldDataObj));
+        try {
+            if ( arrOfOutputs[idx] !== true ) throw 'You hit an err'
+        } catch (err) {
+            console.log(err);
+        }
+    })
+
+    $.each( formLabels, (idx, formlabel) => {
+        $(`#${formlabel}`).val('') // clears the input fields 
+    })
 }
 
 $(() => {  // this is the same as $('document').ready(function() { ... })
     pageLayout();  
     form(); 
     pageTable(); 
-    _test_validate()
+    _test_(formValidated)
 }); 
