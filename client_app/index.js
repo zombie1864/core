@@ -398,8 +398,7 @@ const pageTable = () => { // table that deals with [{}, {}, {}] DS with each obj
         })
     })
     $('.table').append(tableTag)
-    $('#tableId').on('click', rowSelector4Editing); // selects row data from table to populate on form 
-    $('#tableId').on('click', rowSelectionHighlight); // highlights the row     
+    $('#tableId').on('click', rowSelector4Editing); // selects row data from table to populate on form    
 } // end of func 
 
 const emptyDB_CSS = tableTag => {
@@ -419,7 +418,7 @@ const emptyDB_CSS = tableTag => {
 const tableGeneratorFunc = (dataFromDB, tableTag) => { // data comes from db [ {}, {}, {} ]
     colNameGenerator(dataFromDB, tableTag) // generates the colNames for the table 
     tableDataGenerator(dataFromDB) // generates the data that is display to the table 
-} // end of func
+} // end of wrapper func
 
 const colNameGenerator = (dataFromDB, tableTag) => {
     let keys = Object.keys(dataFromDB[0]) // gives the keys from obj 
@@ -449,10 +448,10 @@ const tableDataGenerator = (dataFromDB) => { // data is [ {}, {}, {} ]
     });
 }
 
-const rowSelector4Editing = event => {  
+const rowSelector4Editing = event => { // deals w. the logic if populating the text field 
     let trIdValue = $(event.target).closest('tr').attr('id') // returns the id from tr 
-    let trClassId = $(`.id${parseInt(trIdValue) + 1}`).html() // returns the id from td 
-    dataIDFromDB = trClassId
+    let tdClassId = $(`.id${parseInt(trIdValue) + 1}`).html() // returns the id from td 
+    dataIDFromDB = tdClassId
 
     $.each( formLabels, (idx, formLabel) => {
         let dataForSelection = $(`.${
@@ -464,24 +463,20 @@ const rowSelector4Editing = event => {
         $(`#${formLabel}`).val(`${dataForSelection}`)
         if ( idx === formLabels.length - 1 ) $(`#${formLabel}Options`).val(`${dataForSelection}`) // populates inputs with td values 
     })
+    rowSelectionHighlight(event) // deals w. the logic for highlighting row 
 } // end of func 
 
-const rowSelectionHighlight = event => { // highlights the currRow onClick 
-    let idValue = $(event.target).attr('class').slice(-1) // gives the idValue of currTarget 
-    let rowIndex = idValue - 1; // starts rowIndex at 0 rather than 1 
-    currRowToggle = $(`#${rowIndex}`) // current rowIndex from []
+const rowSelectionHighlight = (event) => { // highlights the currRow onClick 
+    let idValue = $(event.target).attr('class').slice(-1) - 1// gives the idValue of currTarget 
+    currRowToggle = $(`#${idValue}`) // assigns globalVar the rowIndex value     
+
     if (currRowToggle !== null && prevRowToggle === null ) {
         currRowToggle.css('background-color', 'yellow');
     } else if (currRowToggle !== null && prevRowToggle !== null) {
         prevRowToggle.css('background-color', '')
+        currRowToggle.css('background-color', 'yellow');
     } 
-    $('#tableId').on('click', prevRowToggle = $(`#${rowIndex}`), nxtRowSelectionHighlight); 
-} // end of func 
-
-const nxtRowSelectionHighlight = event => { // highlights the next row onClick 
-    let idValue = $(event.target).attr('class').slice(-1) // gives the idValue of currTarget 
-    let rowIndex = idValue - 1; // starts rowIndex at 0 rather than 1 
-    $(`#${rowIndex}`).css('background-color', 'yellow');
+    prevRowToggle = $(`#${idValue}`) 
 } // end of func 
 
 const pageLayout = () => {
