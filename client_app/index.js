@@ -13,7 +13,7 @@ const form = () => {
     const formColNameClasses = ['fieldCol', 'textCol'] // used to stylize the colName 
     const tableHeaders = ['field label', 'text field']
 
-    $('.form').append('Form')
+    $('.form').append('<p class="formTxt">Form')
     formTableHeaders(formColNameClasses, tableHeaders) // gives each col a category name 
     formRowandData(formLabels, inputPlaceHolders) // gives form table, row and td tags  
     addEventBtns()
@@ -66,9 +66,6 @@ const addEventBtns = () => {
     $( document ).ajaxComplete( () => { // determines the css style for btns after ajax call 
         let lengthOfTable = $('#tableId tr').length
         switch (lengthOfTable) {
-            case 0: 
-                noDataBtnsCss(labelBtns)
-                break 
             default: 
                 btnsCss(labelBtns)
         }
@@ -90,27 +87,8 @@ const btnsCss = labelBtns => {
                 'cursor': 'pointer', 
                 'position': 'relative', 
                 'bottom': '-150px',
-            }
-        )
-    })
-} // end of func
+                'left': '80px'
 
-const noDataBtnsCss = labelBtns => {
-    $.each(labelBtns, ( idx, labelBtn) => {
-        $(`#${labelBtn}`).css(
-            {
-                'background-color': '#4CAF50',
-                'border-radius': '10px',
-                'color': 'white',
-                'padding': '10px 20px',
-                'text-align': 'center',
-                'display': 'inline-block',
-                'font-size': '16px',
-                'margin': '10px 5px',
-                'cursor': 'pointer', 
-                'position': 'relative', 
-                'bottom': '-150px',
-                'left': '100px'
             }
         )
     })
@@ -504,7 +482,13 @@ const pageLayoutCss = () => {
         }
     )
 
-    $('#layoutTable th.table').css('border-style', 'solid')
+    $('#layoutTable th.table').css(
+        {
+        'border-style': 'solid', 
+        'position': 'relative', 
+        'left': '200px'
+        }
+    )
 } // end of func
 
 /*****************************************************************************/
