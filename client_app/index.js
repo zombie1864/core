@@ -260,18 +260,16 @@ const addEventHandler = (textFieldDataObj) => {
             type: 'POST', 
             url: webUrl,  
             data: textFieldDataObj, // { ... } single obj added to [ {}, {}, ..., {}]
-            success: () => {
-                $.get(webUrl, (dataFromDB) => {
-                    if ( $('.table').find('tr').length === 0 ) {
-                        $('.noData2').remove()
-                        tableGeneratorFunc(dataFromDB, tableTag)
-                    } else {
-                        $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
-                        tableDataGenerator(dataFromDB) // generates the rows for the table 
-                    }
-                    $.each( formLabels, (idx, formlabel) => {
-                        $(`#${formlabel}`).val('') // clears the input fields 
-                    })
+            success: dataFromDB => {
+                if ( $('.table').find('tr').length === 0 ) {
+                    $('.noData2').remove()
+                    tableGeneratorFunc(dataFromDB[1], tableTag)
+                } else {
+                    $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
+                    tableDataGenerator(dataFromDB[1]) // generates the rows for the table 
+                }
+                $.each( formLabels, (idx, formlabel) => {
+                    $(`#${formlabel}`).val('') // clears the input fields 
                 })
             }, 
             error: (errMsg) => {
@@ -287,13 +285,11 @@ const editEventHandler = (textFieldDataObj) => {
             type: 'PUT', 
             url: `${webUrl + '/' + dataIDFromDB}`, 
             data: textFieldDataObj, 
-            success: () => {
-                $.get(webUrl, (dataFromDB) => {
-                    $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
-                    tableDataGenerator(dataFromDB) // generates the rows for the table 
-                    $.each( formLabels, (idx, formlabel) => {
-                        $(`#${formlabel}`).val('') // clears the input fields 
-                    })
+            success: dataFromDB => {
+                $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
+                tableDataGenerator(dataFromDB[1]) // generates the rows for the table 
+                $.each( formLabels, (idx, formlabel) => {
+                    $(`#${formlabel}`).val('') // clears the input fields 
                 })
             },
             error: (errMsg) => {
@@ -391,7 +387,7 @@ const pageTable = () => { // table that deals with [{}, {}, {}] DS with each obj
         $.ajax({
             type: 'GET', 
             url: webUrl, 
-            success: dataFromDB => { // data taken from db in the form of [{},{},{}]
+            success: dataFromDB => { // data taken from db in the form of [{},{},{}
                 if (dataFromDB.length === 0) {
                     emptyDB_CSS(tableTag)
                 } else {
@@ -591,5 +587,5 @@ $(() => {  // this is the same as $('document').ready(function() { ... })
     pageLayout();  
     form(); 
     pageTable(); 
-    _test_(formValidated)
+    // _test_(formValidated)
 }); 

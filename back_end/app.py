@@ -19,12 +19,12 @@ def list_attr():
 @app.route("/attr", methods=["POST"])
 def create_attr():
     data = request.form.to_dict()
-    return jsonify(AttrService().create(data))
+    return jsonify(AttrService().create(data), AttrService().list())
 
 @app.route("/attr/<item_id>", methods=['PUT'])
 def update_item(item_id):
     data = request.form.to_dict()
-    return jsonify(AttrService().update(item_id, data))
+    return jsonify(AttrService().update(item_id, data), AttrService().list())
 
 @app.route("/attr/<item_id>", methods=['DELETE'])
 def delete_item(item_id):
