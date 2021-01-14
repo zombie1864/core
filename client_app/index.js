@@ -285,13 +285,11 @@ const editEventHandler = (textFieldDataObj) => {
             type: 'PUT', 
             url: `${webUrl + '/' + dataIDFromDB}`, 
             data: textFieldDataObj, 
-            success: () => {
-                $.get(webUrl, (dataFromDB) => {
-                    $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
-                    tableDataGenerator(dataFromDB) // generates the rows for the table 
-                    $.each( formLabels, (idx, formlabel) => {
-                        $(`#${formlabel}`).val('') // clears the input fields 
-                    })
+            success: dataFromDB => {
+                $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
+                tableDataGenerator(dataFromDB[1]) // generates the rows for the table 
+                $.each( formLabels, (idx, formlabel) => {
+                    $(`#${formlabel}`).val('') // clears the input fields 
                 })
             },
             error: (errMsg) => {
