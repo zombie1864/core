@@ -497,7 +497,7 @@ const pageLayoutCss = () => {
 const testCases = {
     'input': [ // test cases 
         {
-            "Name" : '12', // false 
+            "Name" : 'Karl@yay.io', // false 
             "Age" : 'Karl', 
             "Email" : 'Pie', 
             "Feedback" : 'Yay!', 
@@ -539,6 +539,7 @@ const _test_ = method => {
     const arrOfInputs = testCases.input, // graps the input [{}, {}, {}]
           arrOfOutputs = testCases.output // graps the output [ boolean ]
     $.each(arrOfInputs, (idx, inputObj) => { // iterates thr arrOfInputs 
+        // console.log(idx, arrOfOutputs[idx]);
         $.each( inputObj, (key, val) => { // iterates thr Obj 
             key === "Gender" ? $(`#${key}Options`).val(val) : $(`#${key}`).val(val) // populates the text field with data
         })
@@ -549,9 +550,26 @@ const _test_ = method => {
             "Feedback":$('#Feedback').val(),
             "Gender":$('#GenderOptions option:selected').val() 
         }
-        console.log(idx, method(textFieldDataObj));
-        try {
-            if ( arrOfOutputs[idx] !== true ) throw 'You hit an err'
+        try { // test the validation but not aux func 
+            if (method(textFieldDataObj) !== true ) throw `${method}\ 
+            returns false`
+        } catch (err) {
+            console.log(`predicted outcomes are: [ ${arrOfOutputs} ]\
+            at index, idx = ${idx} the method\ 
+            ${err}`);
+        }
+        try { // aux func are tested, if err - gives helpful msg of failure 
+            if (nameValidation(textFieldDataObj.Name) !== true ) throw '---nameValidation failed---'
+        } catch (err) {
+            console.log(err);
+        }
+        try { // aux func are tested, if err - gives helpful msg of failure 
+            if (emailValidation(textFieldDataObj.Name) !== true ) throw '---emailValidation failed---'
+        } catch (err) {
+            console.log(err);
+        }
+        try { // aux func are tested, if err - gives helpful msg of failure 
+            if (ageValidation(textFieldDataObj.Age) !== true ) throw '---ageValidation failed---'
         } catch (err) {
             console.log(err);
         }
@@ -566,5 +584,5 @@ $(() => {  // this is the same as $('document').ready(function() { ... })
     pageLayout();  
     form(); 
     pageTable(); 
-    // _test_(formValidated)
+    _test_(formValidated) // test unit for dev purposes 
 }); 
