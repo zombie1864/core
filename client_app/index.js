@@ -372,12 +372,12 @@ const pageTable = () => { // table that deals with [{}, {}, {}] DS with each obj
                 } else {
                     tableTag.remove('.noData2')
                     tableGeneratorFunc(dataFromDB, tableTag)
+                    $('#tableId tr').on('click', rowSelector4Editing); // selects row data from table to populate on form, placed after ajax call IMPORTANT 
                 }            
             }
         })
     })
     $('.table').append(tableTag)
-    $('#tableId').on('click', rowSelector4Editing); // selects row data from table to populate on form    
 } // end of func 
 
 const emptyDB_CSS = tableTag => {
@@ -448,7 +448,7 @@ const rowSelector4Editing = event => { // deals w. the logic if populating the t
 } // end of func 
 
 const rowSelectionHighlight = (event) => { // highlights the currRow onClick 
-    let idValue = $(event.target).attr('class').slice(-1) - 1// gives the idValue of currTarget 
+    let idValue = $(event.target).attr('class').slice(-1) - 1// gives the idValue of currTarget
     currRowToggle = $(`#${idValue}`) // assigns globalVar the rowIndex value     
 
     if (currRowToggle !== null && prevRowToggle === null ) {
