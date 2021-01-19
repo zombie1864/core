@@ -431,8 +431,10 @@ const tableDataGenerator = (dataFromDB) => { // data is [ {}, {}, {} ]
 
 const rowSelector4Editing = event => { // deals w. the logic if populating the text field 
     let trIdValue = $(event.target).closest('tr').attr('id') // returns the id from tr 
+    // console.log(trIdValue);
     let tdClassId = $(`.id${parseInt(trIdValue) + 1}`).html() // returns the id from td 
     dataIDFromDB = tdClassId
+    // console.log(dataIDFromDB);
 
     $.each( formLabels, (idx, formLabel) => {
         let dataForSelection = $(`.${
@@ -448,7 +450,8 @@ const rowSelector4Editing = event => { // deals w. the logic if populating the t
 } // end of func 
 
 const rowSelectionHighlight = (event) => { // highlights the currRow onClick 
-    let idValue = $(event.target).attr('class').slice(-1) - 1// gives the idValue of currTarget
+    let idValue = parseInt( $(event.target).closest('tr').attr('id') )// gives the idValue of currTarget
+    console.log(idValue);
     currRowToggle = $(`#${idValue}`) // assigns globalVar the rowIndex value     
 
     if (currRowToggle !== null && prevRowToggle === null ) {
