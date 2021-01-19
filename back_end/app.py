@@ -28,7 +28,7 @@ def update_item(item_id):
 
 @app.route("/attr/<item_id>", methods=['DELETE'])
 def delete_item(item_id):
-    return jsonify(AttrService().delete(item_id))
+    return jsonify(AttrService().delete(item_id), AttrService().list())
 
 if __name__ == "__main__":
     Schema()
