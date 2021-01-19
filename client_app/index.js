@@ -268,8 +268,7 @@ const editEventHandler = (textFieldDataObj) => {
             url: `${webUrl + '/' + dataIDFromDB}`, 
             data: textFieldDataObj, 
             success: dataFromDB => {
-                $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
-                tableDataGenerator(dataFromDB[1]) // generates the rows for the table 
+                tableRefresh(dataFromDB)
                 $.each( formLabels, (idx, formlabel) => {
                     $(`#${formlabel}`).val('') // clears the input fields 
                 })
