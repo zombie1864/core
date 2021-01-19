@@ -239,13 +239,7 @@ const addEventHandler = (textFieldDataObj) => {
             url: webUrl,  
             data: textFieldDataObj, // { ... } single obj added to [ {}, {}, ..., {}]
             success: dataFromDB => {
-                if ( $('.table').find('tr').length === 0 ) {
-                    $('.noData2').remove()
-                    tableGeneratorFunc(dataFromDB[1], tableTag)
-                } else {
-                    $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
-                    tableDataGenerator(dataFromDB[1]) // generates the rows for the table 
-                }
+                tableRefresh(dataFromDB) // refreshes the table 
                 $.each( formLabels, (idx, formlabel) => {
                     $(`#${formlabel}`).val('') // clears the input fields 
                 })
@@ -256,6 +250,16 @@ const addEventHandler = (textFieldDataObj) => {
         })
     }
 } // end of func 
+
+const tableRefresh = dataFromDB => { // refreshes comp without refresh to the entire DOM 
+    if ( $('.table').find('tr').length === 0 ) { // no td -> generate the table
+        $('.noData2').remove()
+        tableGeneratorFunc(dataFromDB[1], tableTag)
+    } else {
+        $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
+        tableDataGenerator(dataFromDB[1]) // generates the rows for the table 
+    }
+} // end of func
 
 const editEventHandler = (textFieldDataObj) => { 
     if (formValidated(textFieldDataObj)) {
@@ -399,17 +403,19 @@ const tableGeneratorFunc = (dataFromDB, tableTag) => { // data comes from db [ {
 } // end of wrapper func
 
 const colNameGenerator = (dataFromDB, tableTag) => {
-    let keys = Object.keys(dataFromDB[0]) // gives the keys from obj 
-    tableTag.append('Table').css('display', 'block')
-    $.each(keys, (idx, key) => {
-        tableTag.append(`<th class="colName">${key}`) // gives each col a category name 
-    })
-    $('.colName').css( // stylized col
-        {
-            'text-decoration': 'underline', 
-            'font-style': 'italic',
-        }
-    );
+    if ( $('.table').find('th').length === 0) {
+        let keys = Object.keys(dataFromDB[0]) // gives the keys from obj 
+        tableTag.append('Table').css('display', 'block')
+        $.each(keys, (idx, key) => {
+            tableTag.append(`<th class="colName">${key}`) // gives each col a category name 
+        })
+        $('.colName').css( // stylized col
+            {
+                'text-decoration': 'underline', 
+                'font-style': 'italic',
+            }
+        );
+    }
 }
 
 const tableDataGenerator = (dataFromDB) => { // data is [ {}, {}, {} ]
@@ -584,5 +590,5 @@ $(() => {  // this is the same as $('document').ready(function() { ... })
     pageLayout();  
     form(); 
     pageTable(); 
-    _test_(formValidated) // test unit for dev purposes 
+    // _test_(formValidated) // test unit for dev purposes 
 }); 
