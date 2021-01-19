@@ -270,16 +270,12 @@ const deleteEventHandler = () => {
     $.ajax({
         type: 'DELETE', 
         url: `${webUrl + '/' + dataIDFromDB}`, 
-        success: () => {
-            $.get(webUrl, (dataFromDB) => {
-                $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
-                if (dataFromDB.length === 0) { 
-                    emptyDB_CSS(tableTag) 
-                } else {
-                    tableDataGenerator(dataFromDB) // generates the rows for the table 
-                }
-                clearInputTxtFields() // clears the input fields after deleting form 
-            })        }, 
+        success: (dataFromDB) => {
+            $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
+            tableDataGenerator(dataFromDB[1])// generates the rows for the table 
+            $('#tableId tr').on('click', rowSelector4Editing); // selects row data from table to populate on form, placed after ajax call IMPORTANT 
+            clearInputTxtFields() // clears the input fields after deleting form 
+        }, 
         error: (errMsg) => {
             $('.id').append(`<div>${errMsg}`)
         }
@@ -302,6 +298,7 @@ const demoEventHandler = () => { // iterates seedDB, each obj is sent via post a
                         tableDataGenerator(dataFromDB) // generates the rows for the table 
                     }
                     clearInputTxtFields()
+                    $('#tableId tr').on('click', rowSelector4Editing); // selects row data from table to populate on form, placed after ajax call IMPORTANT 
                 })            
             }, 
             error: (errMsg) => {
@@ -319,6 +316,7 @@ const tableRefresh = dataFromDB => { // refreshes comp without refresh to the en
         $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
         tableDataGenerator(dataFromDB[1]) // generates the rows for the table 
     }
+    $('#tableId tr').on('click', rowSelector4Editing); // selects row data from table to populate on form, placed after ajax call IMPORTANT 
 } // end of func
 
 const clearInputTxtFields = () => { // clears the input fields
@@ -362,22 +360,22 @@ const seedDB = [ // seeds the db with some dummy data
 /*****************************************************************************/
 
 const pageTable = () => { // table that deals with [{}, {}, {}] DS with each obj being a row 
-    $( () => {
-        $.ajax({
-            type: 'GET', 
-            url: webUrl, 
-            success: dataFromDB => { // data taken from db in the form of [{},{},{}
-                if (dataFromDB.length === 0) {
-                    emptyDB_CSS(tableTag)
-                } else {
-                    tableTag.remove('.noData2')
-                    tableGeneratorFunc(dataFromDB, tableTag)
-                    $('#tableId tr').on('click', rowSelector4Editing); // selects row data from table to populate on form, placed after ajax call IMPORTANT 
-                }            
-            }
-        })
+    $.ajax({
+        type: 'GET', 
+        url: webUrl, 
+        success: dataFromDB => { // data taken from db in the form of [{},{},{}
+            if (dataFromDB.length === 0) {
+                emptyDB_CSS(tableTag)
+            } else {
+                tableTag.remove('.noData2')
+                tableGeneratorFunc(dataFromDB, tableTag)
+                $('#tableId tr').on('click', rowSelector4Editing); // selects row data from table to populate on form, placed after ajax call IMPORTANT 
+            }            
+        }
     })
     $('.table').append(tableTag)
+    // $('#tableId').on('click', rowSelector4Editing); // selects row data from table to populate on form, placed after ajax call IMPORTANT 
+
 } // end of func 
 
 const emptyDB_CSS = tableTag => {
@@ -431,10 +429,8 @@ const tableDataGenerator = (dataFromDB) => { // data is [ {}, {}, {} ]
 
 const rowSelector4Editing = event => { // deals w. the logic if populating the text field 
     let trIdValue = $(event.target).closest('tr').attr('id') // returns the id from tr 
-    // console.log(trIdValue);
     let tdClassId = $(`.id${parseInt(trIdValue) + 1}`).html() // returns the id from td 
     dataIDFromDB = tdClassId
-    // console.log(dataIDFromDB);
 
     $.each( formLabels, (idx, formLabel) => {
         let dataForSelection = $(`.${
@@ -451,7 +447,6 @@ const rowSelector4Editing = event => { // deals w. the logic if populating the t
 
 const rowSelectionHighlight = (event) => { // highlights the currRow onClick 
     let idValue = parseInt( $(event.target).closest('tr').attr('id') )// gives the idValue of currTarget
-    console.log(idValue);
     currRowToggle = $(`#${idValue}`) // assigns globalVar the rowIndex value     
 
     if (currRowToggle !== null && prevRowToggle === null ) {
