@@ -240,9 +240,7 @@ const addEventHandler = (textFieldDataObj) => {
             data: textFieldDataObj, // { ... } single obj added to [ {}, {}, ..., {}]
             success: dataFromDB => {
                 tableRefresh(dataFromDB) // refreshes the table 
-                $.each( formLabels, (idx, formlabel) => {
-                    $(`#${formlabel}`).val('') // clears the input fields 
-                })
+                clearInputTxtFields() // clears the input fields after adding form 
             }, 
             error: (errMsg) => {
                 $('.id').append(`<div>${errMsg}`)
@@ -250,16 +248,6 @@ const addEventHandler = (textFieldDataObj) => {
         })
     }
 } // end of func 
-
-const tableRefresh = dataFromDB => { // refreshes comp without refresh to the entire DOM 
-    if ( $('.table').find('tr').length === 0 ) { // no td -> generate the table
-        $('.noData2').remove()
-        tableGeneratorFunc(dataFromDB[1], tableTag)
-    } else {
-        $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
-        tableDataGenerator(dataFromDB[1]) // generates the rows for the table 
-    }
-} // end of func
 
 const editEventHandler = (textFieldDataObj) => { 
     if (formValidated(textFieldDataObj)) {
@@ -269,9 +257,7 @@ const editEventHandler = (textFieldDataObj) => {
             data: textFieldDataObj, 
             success: dataFromDB => {
                 tableRefresh(dataFromDB)
-                $.each( formLabels, (idx, formlabel) => {
-                    $(`#${formlabel}`).val('') // clears the input fields 
-                })
+                clearInputTxtFields() // clears the input fields after editing form
             },
             error: (errMsg) => {
                 $('.id').append(`<div>${errMsg}`)
@@ -292,9 +278,7 @@ const deleteEventHandler = () => {
                 } else {
                     tableDataGenerator(dataFromDB) // generates the rows for the table 
                 }
-                $.each( formLabels, (idx, formlabel) => {
-                    $(`#${formlabel}`).val('') // clears the input fields 
-                })
+                clearInputTxtFields() // clears the input fields after deleting form 
             })        }, 
         error: (errMsg) => {
             $('.id').append(`<div>${errMsg}`)
@@ -317,9 +301,7 @@ const demoEventHandler = () => { // iterates seedDB, each obj is sent via post a
                         $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
                         tableDataGenerator(dataFromDB) // generates the rows for the table 
                     }
-                    $.each( formLabels, (idx, formlabel) => {
-                        $(`#${formlabel}`).val('') // clears the input fields 
-                    })
+                    clearInputTxtFields()
                 })            
             }, 
             error: (errMsg) => {
@@ -328,6 +310,22 @@ const demoEventHandler = () => { // iterates seedDB, each obj is sent via post a
         })
     }) 
 } // end of func 
+
+const tableRefresh = dataFromDB => { // refreshes comp without refresh to the entire DOM 
+    if ( $('.table').find('tr').length === 0 ) { // no td -> generate the table
+        $('.noData2').remove()
+        tableGeneratorFunc(dataFromDB[1], tableTag)
+    } else {
+        $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
+        tableDataGenerator(dataFromDB[1]) // generates the rows for the table 
+    }
+} // end of func
+
+const clearInputTxtFields = () => { // clears the input fields
+    $.each( formLabels, (idx, formlabel) => {
+        $(`#${formlabel}`).val('')  
+    })
+}
 
 const seedDB = [ // seeds the db with some dummy data  
     {
