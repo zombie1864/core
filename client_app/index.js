@@ -147,9 +147,9 @@ const nameValidation = (nameValue) => { // only handles returning a boolean
 } // end of func
 
 const nameValidationCSSErr = (nameValue, result) => { // handles the UI CSS layer 
-    if ( $('#nameError').length > 0 ) { // SEE IF YOU CAN MAKE THIS MAKE MORE SENSE 
-        $('.formLabelName').css('background-color', '');
+    if ( $('#nameError').length > 0 ) { //used as a refreshing mechanism by reset 
         $('#nameError').remove();
+        $('.formLabelName').css('background-color', '');
     } else if ( nameValue === '' ) {
         $('.Name').append(`<p id="${errorTypes[0]}">Please input a name</p>`)
         errorMsgCss(errorTypes[0], 'formLabelName')
@@ -163,19 +163,15 @@ const nameValidationCSSErr = (nameValue, result) => { // handles the UI CSS laye
             $('.Name').append('<p id="nameError">Please input a name</p>')
             errorMsgCss(errorTypes[0], 'formLabelName')
             return result = false // if emailUrl found this breaks the loop and returns false
-        } else if ( emailUrlIdx === -1 && nameValue.length > 1 ) {
-            $('.formLabelName').css('background-color', '');
-            $('#nameError').remove();
         }
     })
-    // if ( $('#nameError').length === 0) return true; 
     return result
 }
 
 const ageValidation = (ageValue) => { 
     let result = true; 
     let onlyNumbers = /^[0-9]+$/ 
-    if ( $('#ageError').length > 0 ) {
+    if ( $('#ageError').length > 0 ) { // used as a skipping mechanism to go to nxt if block 
     } else if (!onlyNumbers.test( ageValue )) { // validation for age 
         $('.Age').append(`<p id="${errorTypes[1]}">Please input only numbers for your age`)
         errorMsgCss(errorTypes[1], 'formLabelAge')
@@ -186,7 +182,6 @@ const ageValidation = (ageValue) => {
         $('#ageError').remove();
     }
 
-    // if ( $('#ageError').length === 0 ) return true; 
     return result 
 } // end of func
 
@@ -201,16 +196,10 @@ const emailValidation = (emailValue) => {
         errorMsgCss(errorTypes[2], 'formLabelEmail')
         result = false; // used for boolean value for validation before post API req 
     } 
-    if ( emailValue.length > 0 && !invalidEmailAddress(emailValue) ) {
-        $('.formLabelEmail').css('background-color', '');
-        $('#emailError').remove();
-    }
-    // if ( $('#emailError').length === 0 ) return true; 
     return result
 } // end of func
 
 const invalidEmailAddress = (emailValue) => {
-    // console.log(emailValue);
     let missingEmailRequirements = 0; 
 
     if ( emailValue.indexOf('@') === -1  ) missingEmailRequirements++; 
