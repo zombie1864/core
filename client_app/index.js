@@ -147,22 +147,23 @@ const nameValidation = (nameValue) => { // only handles returning a boolean
 } // end of func
 
 const nameValidationCSSErr = (nameValue, result) => { // handles the UI CSS layer 
-    if ( $('#nameError').length > 0 ) {
+    if ( $('#nameError').length > 0 ) { // SEE IF YOU CAN MAKE THIS MAKE MORE SENSE 
+        $('.formLabelName').css('background-color', '');
+        $('#nameError').remove();
     } else if ( nameValue === '' ) {
         $('.Name').append(`<p id="${errorTypes[0]}">Please input a name</p>`)
         errorMsgCss(errorTypes[0], 'formLabelName')
         result = false; 
         return result; // used for boolean value for validation before post API req 
     }
-
+    
     $.each(emailUrls, (idx, emailUrl) => {
         let emailUrlIdx = nameValue.indexOf(emailUrl)
-         if (emailUrlIdx !== -1) {
+        if (emailUrlIdx !== -1) {
             $('.Name').append('<p id="nameError">Please input a name</p>')
             errorMsgCss(errorTypes[0], 'formLabelName')
-
-            result = false 
-        } else if ( emailUrlIdx === -1 && $('#Name').val().length > 1 ) {
+            return result = false // if emailUrl found this breaks the loop and returns false
+        } else if ( emailUrlIdx === -1 && nameValue.length > 1 ) {
             $('.formLabelName').css('background-color', '');
             $('#nameError').remove();
         }
@@ -191,7 +192,9 @@ const ageValidation = (ageValue) => {
 
 const emailValidation = (emailValue) => {
     let result = true; 
-    if ( $('#emailError').length > 0 ) {
+    if ( $('#emailError').length > 0 ) { // SEE IF YOU CAN MAKE THIS MAKE MORE SENSE 
+        $('.formLabelEmail').css('background-color', '');
+        $('#emailError').remove();
     } 
     if ( invalidEmailAddress(emailValue) ) {
         $('.Email').append(`<p id="${errorTypes[2]}">Please input a valid email address</p>`)
@@ -553,8 +556,6 @@ const _test_ENV = method => {
     const arrOfInputs = testCases.input, // graps the input [{}, {}, {}]
           arrOfOutputs = testCases.output // graps the output [ boolean ]
     $.each(arrOfInputs, (idx, inputObj) => { // iterates thr arrOfInputs 
-        // console.log(arrOfInputs[2]);
-        // method( arrOfInputs[2] )
         
         try { // test the validation but not aux func 
             if (method(inputObj) !== true ) throw `${method} returns false`
@@ -563,6 +564,7 @@ const _test_ENV = method => {
             at index, idx = ${idx} the method\ 
             ${err}`);
         }
+        // passes the inputObj for a second time for the aux func 
         try { // aux func are tested, if err - gives helpful msg of failure 
             if (nameValidation(inputObj.Name) !== true ) throw '---nameValidation failed---'
         } catch (err) {
