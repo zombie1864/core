@@ -141,73 +141,79 @@ const formValidated = (textFieldDataObj) => {
     return (nameValidation(textFieldDataObj.Name) && ageValidation(textFieldDataObj.Age) && emailValidation(textFieldDataObj.Email) ) ? true : false;
 } // end of func 
 
-const nameValidation = (nameValue) => {
-    if ( $('#nameError').length > 0 ) {
+const nameValidation = (nameValue) => { // only handles returning a boolean 
+    let result = true; 
+    return nameValidationCSSErr(nameValue, result)
+} // end of func
+
+const nameValidationCSSErr = (nameValue, result) => { // handles the UI CSS layer 
+    if ( $('#nameError').length > 0 ) { // used as a skipping mechanism to go to nxt if block 
     } else if ( nameValue === '' ) {
         $('.Name').append(`<p id="${errorTypes[0]}">Please input a name</p>`)
         errorMsgCss(errorTypes[0], 'formLabelName')
-        return false; // used for boolean value for validation before post API req 
+        result = false; 
+        return result; // used for boolean value for validation before post API req 
     }
-
+    
     $.each(emailUrls, (idx, emailUrl) => {
-        let emailUrlIdx = $('#Name').val().indexOf(emailUrl)
-         if (emailUrlIdx !== -1) {
+        let emailUrlIdx = nameValue.indexOf(emailUrl)
+        if (emailUrlIdx !== -1) {
             $('.Name').append('<p id="nameError">Please input a name</p>')
             errorMsgCss(errorTypes[0], 'formLabelName')
-
-            return false 
-        } else if ( emailUrlIdx === -1 && $('#Name').val().length > 1 ) {
+            return result = false // if emailUrl found this breaks the loop and returns false
+        } else if ( emailUrlIdx === -1 && nameValue.length > 1 ) {
             $('.formLabelName').css('background-color', '');
             $('#nameError').remove();
         }
     })
-    if ( $('#nameError').length === 0 ) return true; 
-} // end of func
+    return result
+}
 
-const ageValidation = (ageValue) => {
+const ageValidation = (ageValue) => { 
+    let result = true; 
     let onlyNumbers = /^[0-9]+$/ 
-    if ( $('#ageError').length > 0 ) {
-    } else if (!onlyNumbers.test($('#Age').val())) { // validation for age 
+    if ( $('#ageError').length > 0 ) { // used as a skipping mechanism to go to nxt if block 
+    } else if (!onlyNumbers.test( ageValue )) { // validation for age 
         $('.Age').append(`<p id="${errorTypes[1]}">Please input only numbers for your age`)
         errorMsgCss(errorTypes[1], 'formLabelAge')
-        return false; // used for boolean value for validation before post API req 
+        result = false; // used for boolean value for validation before post API req 
     }
     if ( ageValue > 0 ) {
         $('.formLabelAge').css('background-color', '');
         $('#ageError').remove();
     }
 
-    if ( $('#ageError').length === 0 ) return true; 
+    return result 
 } // end of func
 
 const emailValidation = (emailValue) => {
-    if ( $('#emailError').length > 0 ) {
-    } else if ( invalidEmailAddress() ) {
-        $('.Email').append(`<p id="${errorTypes[2]}">Please input a valid email address</p>`)
-        errorMsgCss(errorTypes[2], 'formLabelEmail')
-        return false; // used for boolean value for validation before post API req 
-    } 
-    if ( emailValue.length > 0 && !invalidEmailAddress() ) {
+    let result = true; 
+    if ( $('#emailError').length > 0 ) { // SEE IF YOU CAN MAKE THIS MAKE MORE SENSE 
         $('.formLabelEmail').css('background-color', '');
         $('#emailError').remove();
-    }
-
-    if ( $('#emailError').length === 0 ) return true; 
+    } 
+    if ( invalidEmailAddress(emailValue) ) {
+        $('.Email').append(`<p id="${errorTypes[2]}">Please input a valid email address</p>`)
+        errorMsgCss(errorTypes[2], 'formLabelEmail')
+        result = false; // used for boolean value for validation before post API req 
+    } 
+    return result
 } // end of func
 
-const invalidEmailAddress = () => {
+const invalidEmailAddress = (emailValue) => {
     let missingEmailRequirements = 0; 
 
-    if ( $('#Email').val().indexOf('@') === -1  ) missingEmailRequirements++; 
+    if ( emailValue.indexOf('@') === -1  ) missingEmailRequirements++; 
 
     $.each(emailUrls, (idx, emailUrl) => {
-        if ( ($('#Email').val().includes(emailUrl)) ) {
+        if ( emailValue.includes(`@${emailUrl}`) ) missingEmailRequirements++; 
+        if ( ( emailValue.includes(emailUrl) ) ) {
             return false // this breaks the loop 
         } else if ( idx === emailUrls.length - 1 ) {
             missingEmailRequirements++;
         }
     })
-
+    
     return (missingEmailRequirements > 0 ) ? true : false
 } // end of func
 
@@ -239,16 +245,8 @@ const addEventHandler = (textFieldDataObj) => {
             url: webUrl,  
             data: textFieldDataObj, // { ... } single obj added to [ {}, {}, ..., {}]
             success: dataFromDB => {
-                if ( $('.table').find('tr').length === 0 ) {
-                    $('.noData2').remove()
-                    tableGeneratorFunc(dataFromDB[1], tableTag)
-                } else {
-                    $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
-                    tableDataGenerator(dataFromDB[1]) // generates the rows for the table 
-                }
-                $.each( formLabels, (idx, formlabel) => {
-                    $(`#${formlabel}`).val('') // clears the input fields 
-                })
+                tableRefresh(dataFromDB) // refreshes the table 
+                clearInputTxtFields() // clears the input fields after adding form 
             }, 
             error: (errMsg) => {
                 $('.id').append(`<div>${errMsg}`)
@@ -264,11 +262,8 @@ const editEventHandler = (textFieldDataObj) => {
             url: `${webUrl + '/' + dataIDFromDB}`, 
             data: textFieldDataObj, 
             success: dataFromDB => {
-                $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
-                tableDataGenerator(dataFromDB[1]) // generates the rows for the table 
-                $.each( formLabels, (idx, formlabel) => {
-                    $(`#${formlabel}`).val('') // clears the input fields 
-                })
+                tableRefresh(dataFromDB)
+                clearInputTxtFields() // clears the input fields after editing form
             },
             error: (errMsg) => {
                 $('.id').append(`<div>${errMsg}`)
@@ -281,18 +276,12 @@ const deleteEventHandler = () => {
     $.ajax({
         type: 'DELETE', 
         url: `${webUrl + '/' + dataIDFromDB}`, 
-        success: () => {
-            $.get(webUrl, (dataFromDB) => {
-                $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
-                if (dataFromDB.length === 0) { 
-                    emptyDB_CSS(tableTag) 
-                } else {
-                    tableDataGenerator(dataFromDB) // generates the rows for the table 
-                }
-                $.each( formLabels, (idx, formlabel) => {
-                    $(`#${formlabel}`).val('') // clears the input fields 
-                })
-            })        }, 
+        success: (dataFromDB) => {
+            $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
+            tableDataGenerator(dataFromDB[1])// generates the rows for the table 
+            $('#tableId tr').on('click', rowSelector4Editing); // selects row data from table to populate on form, placed after ajax call IMPORTANT 
+            clearInputTxtFields() // clears the input fields after deleting form 
+        }, 
         error: (errMsg) => {
             $('.id').append(`<div>${errMsg}`)
         }
@@ -314,9 +303,8 @@ const demoEventHandler = () => { // iterates seedDB, each obj is sent via post a
                         $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
                         tableDataGenerator(dataFromDB) // generates the rows for the table 
                     }
-                    $.each( formLabels, (idx, formlabel) => {
-                        $(`#${formlabel}`).val('') // clears the input fields 
-                    })
+                    clearInputTxtFields()
+                    $('#tableId tr').on('click', rowSelector4Editing); // selects row data from table to populate on form, placed after ajax call IMPORTANT 
                 })            
             }, 
             error: (errMsg) => {
@@ -325,6 +313,23 @@ const demoEventHandler = () => { // iterates seedDB, each obj is sent via post a
         })
     }) 
 } // end of func 
+
+const tableRefresh = dataFromDB => { // refreshes comp without refresh to the entire DOM 
+    if ( $('.table').find('tr').length === 0 ) { // no td -> generate the table
+        $('.noData2').remove()
+        tableGeneratorFunc(dataFromDB[1], tableTag)
+    } else {
+        $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
+        tableDataGenerator(dataFromDB[1]) // generates the rows for the table 
+    }
+    $('#tableId tr').on('click', rowSelector4Editing); // selects row data from table to populate on form, placed after ajax call IMPORTANT 
+} // end of func
+
+const clearInputTxtFields = () => { // clears the input fields
+    $.each( formLabels, (idx, formlabel) => {
+        $(`#${formlabel}`).val('')  
+    })
+}
 
 const seedDB = [ // seeds the db with some dummy data  
     {
@@ -361,22 +366,22 @@ const seedDB = [ // seeds the db with some dummy data
 /*****************************************************************************/
 
 const pageTable = () => { // table that deals with [{}, {}, {}] DS with each obj being a row 
-    $( () => {
-        $.ajax({
-            type: 'GET', 
-            url: webUrl, 
-            success: dataFromDB => { // data taken from db in the form of [{},{},{}
-                if (dataFromDB.length === 0) {
-                    emptyDB_CSS(tableTag)
-                } else {
-                    tableTag.remove('.noData2')
-                    tableGeneratorFunc(dataFromDB, tableTag)
-                }            
-            }
-        })
+    $.ajax({
+        type: 'GET', 
+        url: webUrl, 
+        success: dataFromDB => { // data taken from db in the form of [{},{},{}
+            if (dataFromDB.length === 0) {
+                emptyDB_CSS(tableTag)
+            } else {
+                tableTag.remove('.noData2')
+                tableGeneratorFunc(dataFromDB, tableTag)
+                $('#tableId tr').on('click', rowSelector4Editing); // selects row data from table to populate on form, placed after ajax call IMPORTANT 
+            }            
+        }
     })
     $('.table').append(tableTag)
-    $('#tableId').on('click', rowSelector4Editing); // selects row data from table to populate on form    
+    // $('#tableId').on('click', rowSelector4Editing); // selects row data from table to populate on form, placed after ajax call IMPORTANT 
+
 } // end of func 
 
 const emptyDB_CSS = tableTag => {
@@ -399,17 +404,19 @@ const tableGeneratorFunc = (dataFromDB, tableTag) => { // data comes from db [ {
 } // end of wrapper func
 
 const colNameGenerator = (dataFromDB, tableTag) => {
-    let keys = Object.keys(dataFromDB[0]) // gives the keys from obj 
-    tableTag.append('Table').css('display', 'block')
-    $.each(keys, (idx, key) => {
-        tableTag.append(`<th class="colName">${key}`) // gives each col a category name 
-    })
-    $('.colName').css( // stylized col
-        {
-            'text-decoration': 'underline', 
-            'font-style': 'italic',
-        }
-    );
+    if ( $('.table').find('th').length === 0) {
+        let keys = Object.keys(dataFromDB[0]) // gives the keys from obj 
+        tableTag.append('Table').css('display', 'block')
+        $.each(keys, (idx, key) => {
+            tableTag.append(`<th class="colName">${key}`) // gives each col a category name 
+        })
+        $('.colName').css( // stylized col
+            {
+                'text-decoration': 'underline', 
+                'font-style': 'italic',
+            }
+        );
+    }
 }
 
 const tableDataGenerator = (dataFromDB) => { // data is [ {}, {}, {} ]
@@ -445,7 +452,7 @@ const rowSelector4Editing = event => { // deals w. the logic if populating the t
 } // end of func 
 
 const rowSelectionHighlight = (event) => { // highlights the currRow onClick 
-    let idValue = $(event.target).attr('class').slice(-1) - 1// gives the idValue of currTarget 
+    let idValue = parseInt( $(event.target).closest('tr').attr('id') )// gives the idValue of currTarget
     currRowToggle = $(`#${idValue}`) // assigns globalVar the rowIndex value     
 
     if (currRowToggle !== null && prevRowToggle === null ) {
@@ -496,34 +503,34 @@ const pageLayoutCss = () => {
 /*****************************************************************************/
 const testCases = {
     'input': [ // test cases 
-        {
-            "Name" : 'Karl@yay.io', // false 
-            "Age" : 'Karl', 
-            "Email" : 'Pie', 
+        {  
+            "Name" : 'Karl@yay.io', //---nameValidation failed---
+            "Age" : 'Karl', // ---ageValidation failed---
+            "Email" : 'Pie', // ---emailValidation failed---
             "Feedback" : 'Yay!', 
             "Gender" : '1'
-        }, 
+        }, // false 
         {
-            "Name" : 'Jimmy', // true 
+            "Name" : 'Jimmy', 
             "Age" : '12', 
             "Email" : 'Neutron@nick.com', 
             "Feedback" : 'Gotta blast!', 
             "Gender" : '1'
-        }, 
+        }, // true 
         {
-            "Name" : 'Sheen', // false 
+            "Name" : 'Sheen', 
             "Age" : '12', 
-            "Email" : 'Sheen100gmail.com', 
+            "Email" : 'Sheen100gmail.com', // ---emailValidation failed---
             "Feedback" : 'Ultra lord!', 
             "Gender" : '1'
-        }, 
+        }, // false 
         {
-            "Name" : 'spongbob', // false 
+            "Name" : 'spongbob', 
             "Age" : '22', 
-            "Email" : null, 
+            "Email" : 'wer23@.com', // ---emailValidation failed--- 
             "Feedback" : 'FUN!', 
             "Gender" : '1'
-        }, 
+        }, // false 
         {
             'Name': 'Patrick24', // true 
             'Age': '22', 
@@ -535,41 +542,31 @@ const testCases = {
     'output': [ false, true, false, false, true ] // predicted outcomes  
 }
 
-const _test_ = method => {
+const _test_ENV = method => { // test ENV free from UI layer
     const arrOfInputs = testCases.input, // graps the input [{}, {}, {}]
           arrOfOutputs = testCases.output // graps the output [ boolean ]
     $.each(arrOfInputs, (idx, inputObj) => { // iterates thr arrOfInputs 
-        // console.log(idx, arrOfOutputs[idx]);
-        $.each( inputObj, (key, val) => { // iterates thr Obj 
-            key === "Gender" ? $(`#${key}Options`).val(val) : $(`#${key}`).val(val) // populates the text field with data
-        })
-        textFieldDataObj = { // graps the data from the text fields 
-            "Name":$('#Name').val(), 
-            "Age":$('#Age').val(), 
-            "Email":$('#Email').val(), 
-            "Feedback":$('#Feedback').val(),
-            "Gender":$('#GenderOptions option:selected').val() 
-        }
+        
         try { // test the validation but not aux func 
-            if (method(textFieldDataObj) !== true ) throw `${method}\ 
-            returns false`
+            if (method(inputObj) !== true ) throw `${method} returns false`
         } catch (err) {
-            console.log(`predicted outcomes are: [ ${arrOfOutputs} ]\
+            console.log(inputObj, `predicted outcomes are: [ ${arrOfOutputs} ]\
             at index, idx = ${idx} the method\ 
             ${err}`);
         }
+        // passes the inputObj for a second time for the aux func 
         try { // aux func are tested, if err - gives helpful msg of failure 
-            if (nameValidation(textFieldDataObj.Name) !== true ) throw '---nameValidation failed---'
+            if (nameValidation(inputObj.Name) !== true ) throw '---nameValidation failed---'
         } catch (err) {
             console.log(err);
         }
         try { // aux func are tested, if err - gives helpful msg of failure 
-            if (emailValidation(textFieldDataObj.Name) !== true ) throw '---emailValidation failed---'
+            if (emailValidation(inputObj.Email) !== true ) throw '---emailValidation failed---'
         } catch (err) {
             console.log(err);
         }
         try { // aux func are tested, if err - gives helpful msg of failure 
-            if (ageValidation(textFieldDataObj.Age) !== true ) throw '---ageValidation failed---'
+            if (ageValidation(inputObj.Age) !== true ) throw '---ageValidation failed---'
         } catch (err) {
             console.log(err);
         }
@@ -584,5 +581,5 @@ $(() => {  // this is the same as $('document').ready(function() { ... })
     pageLayout();  
     form(); 
     pageTable(); 
-    _test_(formValidated) // test unit for dev purposes 
+    // _test_ENV( formValidated ) // test unit for dev purposes 
 }); 
