@@ -147,9 +147,7 @@ const nameValidation = (nameValue) => { // only handles returning a boolean
 } // end of func
 
 const nameValidationCSSErr = (nameValue, result) => { // handles the UI CSS layer 
-    if ( $('#nameError').length > 0 ) { //used as a refreshing mechanism by reset 
-        $('#nameError').remove();
-        $('.formLabelName').css('background-color', '');
+    if ( $('#nameError').length > 0 ) { // used as a skipping mechanism to go to nxt if block 
     } else if ( nameValue === '' ) {
         $('.Name').append(`<p id="${errorTypes[0]}">Please input a name</p>`)
         errorMsgCss(errorTypes[0], 'formLabelName')
@@ -163,6 +161,9 @@ const nameValidationCSSErr = (nameValue, result) => { // handles the UI CSS laye
             $('.Name').append('<p id="nameError">Please input a name</p>')
             errorMsgCss(errorTypes[0], 'formLabelName')
             return result = false // if emailUrl found this breaks the loop and returns false
+        } else if ( emailUrlIdx === -1 && nameValue.length > 1 ) {
+            $('.formLabelName').css('background-color', '');
+            $('#nameError').remove();
         }
     })
     return result
@@ -541,7 +542,7 @@ const testCases = {
     'output': [ false, true, false, false, true ] // predicted outcomes  
 }
 
-const _test_ENV = method => {
+const _test_ENV = method => { // test ENV free from UI layer
     const arrOfInputs = testCases.input, // graps the input [{}, {}, {}]
           arrOfOutputs = testCases.output // graps the output [ boolean ]
     $.each(arrOfInputs, (idx, inputObj) => { // iterates thr arrOfInputs 
@@ -580,5 +581,5 @@ $(() => {  // this is the same as $('document').ready(function() { ... })
     pageLayout();  
     form(); 
     pageTable(); 
-    _test_ENV( formValidated ) // test unit for dev purposes 
+    // _test_ENV( formValidated ) // test unit for dev purposes 
 }); 
