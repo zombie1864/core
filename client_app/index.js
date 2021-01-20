@@ -141,73 +141,86 @@ const formValidated = (textFieldDataObj) => {
     return (nameValidation(textFieldDataObj.Name) && ageValidation(textFieldDataObj.Age) && emailValidation(textFieldDataObj.Email) ) ? true : false;
 } // end of func 
 
-const nameValidation = (nameValue) => {
+const nameValidation = (nameValue) => { // only handles returning a boolean 
+    let result = true; 
+    return nameValidationCSSErr(nameValue, result)
+} // end of func
+
+const nameValidationCSSErr = (nameValue, result) => { // handles the UI CSS layer 
     if ( $('#nameError').length > 0 ) {
     } else if ( nameValue === '' ) {
         $('.Name').append(`<p id="${errorTypes[0]}">Please input a name</p>`)
         errorMsgCss(errorTypes[0], 'formLabelName')
-        return false; // used for boolean value for validation before post API req 
+        result = false; 
+        return result; // used for boolean value for validation before post API req 
     }
 
     $.each(emailUrls, (idx, emailUrl) => {
-        let emailUrlIdx = $('#Name').val().indexOf(emailUrl)
+        let emailUrlIdx = nameValue.indexOf(emailUrl)
          if (emailUrlIdx !== -1) {
             $('.Name').append('<p id="nameError">Please input a name</p>')
             errorMsgCss(errorTypes[0], 'formLabelName')
 
-            return false 
+            result = false 
         } else if ( emailUrlIdx === -1 && $('#Name').val().length > 1 ) {
             $('.formLabelName').css('background-color', '');
             $('#nameError').remove();
         }
     })
-    if ( $('#nameError').length === 0 ) return true; 
-} // end of func
+    // if ( $('#nameError').length === 0) return true; 
+    return result
+}
 
-const ageValidation = (ageValue) => {
+const ageValidation = (ageValue) => { 
+    let result = true; 
     let onlyNumbers = /^[0-9]+$/ 
     if ( $('#ageError').length > 0 ) {
-    } else if (!onlyNumbers.test($('#Age').val())) { // validation for age 
+    } else if (!onlyNumbers.test( ageValue )) { // validation for age 
         $('.Age').append(`<p id="${errorTypes[1]}">Please input only numbers for your age`)
         errorMsgCss(errorTypes[1], 'formLabelAge')
-        return false; // used for boolean value for validation before post API req 
+        result = false; // used for boolean value for validation before post API req 
     }
     if ( ageValue > 0 ) {
         $('.formLabelAge').css('background-color', '');
         $('#ageError').remove();
     }
 
-    if ( $('#ageError').length === 0 ) return true; 
+    // if ( $('#ageError').length === 0 ) return true; 
+    return result 
 } // end of func
 
 const emailValidation = (emailValue) => {
+    let result = true; 
     if ( $('#emailError').length > 0 ) {
-    } else if ( invalidEmailAddress() ) {
+    } 
+    if ( invalidEmailAddress(emailValue) ) {
         $('.Email').append(`<p id="${errorTypes[2]}">Please input a valid email address</p>`)
         errorMsgCss(errorTypes[2], 'formLabelEmail')
-        return false; // used for boolean value for validation before post API req 
+        result = false; // used for boolean value for validation before post API req 
     } 
-    if ( emailValue.length > 0 && !invalidEmailAddress() ) {
+    if ( emailValue.length > 0 && !invalidEmailAddress(emailValue) ) {
         $('.formLabelEmail').css('background-color', '');
         $('#emailError').remove();
     }
-
-    if ( $('#emailError').length === 0 ) return true; 
+    // if ( $('#emailError').length === 0 ) return true; 
+    return result
 } // end of func
 
-const invalidEmailAddress = () => {
+const invalidEmailAddress = (emailValue) => {
+    // console.log(emailValue);
     let missingEmailRequirements = 0; 
 
-    if ( $('#Email').val().indexOf('@') === -1  ) missingEmailRequirements++; 
+    if ( emailValue.indexOf('@') === -1  ) missingEmailRequirements++; 
 
     $.each(emailUrls, (idx, emailUrl) => {
-        if ( ($('#Email').val().includes(emailUrl)) ) {
+        if ( emailValue.includes(`@${emailUrl}`) ) missingEmailRequirements++; 
+        if ( ( emailValue.includes(emailUrl) ) ) {
             return false // this breaks the loop 
         } else if ( idx === emailUrls.length - 1 ) {
             missingEmailRequirements++;
         }
     })
-
+    
     return (missingEmailRequirements > 0 ) ? true : false
 } // end of func
 
@@ -497,34 +510,34 @@ const pageLayoutCss = () => {
 /*****************************************************************************/
 const testCases = {
     'input': [ // test cases 
-        {
-            "Name" : 'Karl@yay.io', // false 
-            "Age" : 'Karl', 
-            "Email" : 'Pie', 
+        {  
+            "Name" : 'Karl@yay.io', //---nameValidation failed---
+            "Age" : 'Karl', // ---ageValidation failed---
+            "Email" : 'Pie', // ---emailValidation failed---
             "Feedback" : 'Yay!', 
             "Gender" : '1'
-        }, 
+        }, // false 
         {
-            "Name" : 'Jimmy', // true 
+            "Name" : 'Jimmy', 
             "Age" : '12', 
             "Email" : 'Neutron@nick.com', 
             "Feedback" : 'Gotta blast!', 
             "Gender" : '1'
-        }, 
+        }, // true 
         {
-            "Name" : 'Sheen', // false 
+            "Name" : 'Sheen', 
             "Age" : '12', 
-            "Email" : 'Sheen100gmail.com', 
+            "Email" : 'Sheen100gmail.com', // ---emailValidation failed---
             "Feedback" : 'Ultra lord!', 
             "Gender" : '1'
-        }, 
+        }, // false 
         {
-            "Name" : 'spongbob', // false 
+            "Name" : 'spongbob', 
             "Age" : '22', 
-            "Email" : null, 
+            "Email" : 'wer23@.com', // ---emailValidation failed--- 
             "Feedback" : 'FUN!', 
             "Gender" : '1'
-        }, 
+        }, // false 
         {
             'Name': 'Patrick24', // true 
             'Age': '22', 
@@ -536,41 +549,32 @@ const testCases = {
     'output': [ false, true, false, false, true ] // predicted outcomes  
 }
 
-const _test_ = method => {
+const _test_ENV = method => {
     const arrOfInputs = testCases.input, // graps the input [{}, {}, {}]
           arrOfOutputs = testCases.output // graps the output [ boolean ]
     $.each(arrOfInputs, (idx, inputObj) => { // iterates thr arrOfInputs 
-        // console.log(idx, arrOfOutputs[idx]);
-        $.each( inputObj, (key, val) => { // iterates thr Obj 
-            key === "Gender" ? $(`#${key}Options`).val(val) : $(`#${key}`).val(val) // populates the text field with data
-        })
-        textFieldDataObj = { // graps the data from the text fields 
-            "Name":$('#Name').val(), 
-            "Age":$('#Age').val(), 
-            "Email":$('#Email').val(), 
-            "Feedback":$('#Feedback').val(),
-            "Gender":$('#GenderOptions option:selected').val() 
-        }
+        // console.log(arrOfInputs[2]);
+        // method( arrOfInputs[2] )
+        
         try { // test the validation but not aux func 
-            if (method(textFieldDataObj) !== true ) throw `${method}\ 
-            returns false`
+            if (method(inputObj) !== true ) throw `${method} returns false`
         } catch (err) {
-            console.log(`predicted outcomes are: [ ${arrOfOutputs} ]\
+            console.log(inputObj, `predicted outcomes are: [ ${arrOfOutputs} ]\
             at index, idx = ${idx} the method\ 
             ${err}`);
         }
         try { // aux func are tested, if err - gives helpful msg of failure 
-            if (nameValidation(textFieldDataObj.Name) !== true ) throw '---nameValidation failed---'
+            if (nameValidation(inputObj.Name) !== true ) throw '---nameValidation failed---'
         } catch (err) {
             console.log(err);
         }
         try { // aux func are tested, if err - gives helpful msg of failure 
-            if (emailValidation(textFieldDataObj.Name) !== true ) throw '---emailValidation failed---'
+            if (emailValidation(inputObj.Email) !== true ) throw '---emailValidation failed---'
         } catch (err) {
             console.log(err);
         }
         try { // aux func are tested, if err - gives helpful msg of failure 
-            if (ageValidation(textFieldDataObj.Age) !== true ) throw '---ageValidation failed---'
+            if (ageValidation(inputObj.Age) !== true ) throw '---ageValidation failed---'
         } catch (err) {
             console.log(err);
         }
@@ -585,5 +589,5 @@ $(() => {  // this is the same as $('document').ready(function() { ... })
     pageLayout();  
     form(); 
     pageTable(); 
-    // _test_(formValidated) // test unit for dev purposes 
+    _test_ENV( formValidated ) // test unit for dev purposes 
 }); 
