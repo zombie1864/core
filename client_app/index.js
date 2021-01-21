@@ -151,14 +151,14 @@ const nameValidationCSSErr = (nameValue, result) => { // handles the UI CSS laye
         return result = false ;
     } else if ( nameValue === '' ) {
         $('.Name').append(`<p id="${errorTypes[0]}">Please input a name</p>`)
-        errorMsgCss(errorTypes[0], 'formLabelName')
-        result = false; 
-        return result; // used for boolean value for validation before post API req 
+        errorMsgCss(errorTypes[0], 'formLabelName') 
+        return result = false; // used for boolean value for validation before post API req 
     }
-    
     $.each(emailUrls, (idx, emailUrl) => {
         let emailUrlIdx = nameValue.indexOf(emailUrl)
-        if (emailUrlIdx !== -1) {
+        if (nameValue.includes(emailUrl) && $('#nameError').length > 0) {
+            return result = false 
+        } else if (emailUrlIdx !== -1) {
             $('.Name').append('<p id="nameError">Please input a name</p>')
             errorMsgCss(errorTypes[0], 'formLabelName')
             return result = false // if emailUrl found this breaks the loop and returns false
@@ -204,7 +204,7 @@ const emailValidation = (emailValue) => {
 const invalidEmailAddress = (emailValue) => {
     let missingEmailRequirements = 0; 
 
-    if ( emailValue.indexOf('@') === -1  ) missingEmailRequirements++; 
+    if ( emailValue.indexOf('@') === -1  || emailValue.indexOf('@') === 0) missingEmailRequirements++; 
 
     $.each(emailUrls, (idx, emailUrl) => {
         if ( emailValue.includes(`@${emailUrl}`) ) missingEmailRequirements++; 
