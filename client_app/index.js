@@ -171,9 +171,8 @@ const nameValidationCSSErr = (nameValue, result) => { // handles the UI CSS laye
 
 const ageValidation = (ageValue) => { 
     let result = true; 
-    console.log(ageValue, result, $('#ageError').length > 0);
     let onlyNumbers = /^[0-9]+$/ 
-    if ( $('#ageError').length > 0 && !onlyNumbers.test( ageValue )) { // used as a skipping mechanism to go to nxt if block 
+    if ( $('#ageError').length > 0 && !onlyNumbers.test( ageValue )) { // ensures age validation regardless of how many attempts to submit
         result = false 
     } else if (!onlyNumbers.test( ageValue )) { // validation for age 
         $('.Age').append(`<p id="${errorTypes[1]}">Please input only numbers for your age`)
@@ -184,7 +183,6 @@ const ageValidation = (ageValue) => {
         $('.formLabelAge').css('background-color', '');
         $('#ageError').remove();
     }
-    console.log(ageValue, result, $('#ageError').length > 0);
     return result 
 } // end of func
 
