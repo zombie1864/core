@@ -147,7 +147,8 @@ const nameValidation = (nameValue) => { // only handles returning a boolean
 } // end of func
 
 const nameValidationCSSErr = (nameValue, result) => { // handles the UI CSS layer 
-    if ( $('#nameError').length > 0 ) { // used as a skipping mechanism to go to nxt if block 
+    if ( $('#nameError').length > 0 && nameValue === '') { // ensures name validation regardless of how many attempts to submit 
+        return result = false ;
     } else if ( nameValue === '' ) {
         $('.Name').append(`<p id="${errorTypes[0]}">Please input a name</p>`)
         errorMsgCss(errorTypes[0], 'formLabelName')
