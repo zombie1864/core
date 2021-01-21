@@ -171,8 +171,10 @@ const nameValidationCSSErr = (nameValue, result) => { // handles the UI CSS laye
 
 const ageValidation = (ageValue) => { 
     let result = true; 
+    console.log(ageValue, result, $('#ageError').length > 0);
     let onlyNumbers = /^[0-9]+$/ 
-    if ( $('#ageError').length > 0 ) { // used as a skipping mechanism to go to nxt if block 
+    if ( $('#ageError').length > 0 && !onlyNumbers.test( ageValue )) { // used as a skipping mechanism to go to nxt if block 
+        result = false 
     } else if (!onlyNumbers.test( ageValue )) { // validation for age 
         $('.Age').append(`<p id="${errorTypes[1]}">Please input only numbers for your age`)
         errorMsgCss(errorTypes[1], 'formLabelAge')
@@ -182,7 +184,7 @@ const ageValidation = (ageValue) => {
         $('.formLabelAge').css('background-color', '');
         $('#ageError').remove();
     }
-
+    console.log(ageValue, result, $('#ageError').length > 0);
     return result 
 } // end of func
 
@@ -547,13 +549,13 @@ const _test_ENV = method => { // test ENV free from UI layer
           arrOfOutputs = testCases.output // graps the output [ boolean ]
     $.each(arrOfInputs, (idx, inputObj) => { // iterates thr arrOfInputs 
         
-        try { // test the validation but not aux func 
-            if (method(inputObj) !== true ) throw `${method} returns false`
-        } catch (err) {
-            console.log(inputObj, `predicted outcomes are: [ ${arrOfOutputs} ]\
-            at index, idx = ${idx} the method\ 
-            ${err}`);
-        }
+        // try { // test the validation but not aux func 
+        //     if (method(inputObj) !== true ) throw `${method} returns false`
+        // } catch (err) {
+        //     console.log(inputObj, `predicted outcomes are: [ ${arrOfOutputs} ]\
+        //     at index, idx = ${idx} the method\ 
+        //     ${err}`);
+        // }
         // passes the inputObj for a second time for the aux func 
         try { // aux func are tested, if err - gives helpful msg of failure 
             if (nameValidation(inputObj.Name) !== true ) throw '---nameValidation failed---'
