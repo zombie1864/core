@@ -214,6 +214,14 @@ const invalidEmailAddress = (emailValue) => {
 
     $.each(emailUrls, (idx, emailUrl) => {
         if ( emailValue.includes(`@${emailUrl}`) ) missingEmailRequirements++; 
+        if (
+            emailValue.includes(`${emailUrl}${emailUrl}`) ||
+            emailValue.includes(`${emailUrl}.com`) || 
+            emailValue.includes(`${emailUrl}.co`) || 
+            emailValue.includes(`${emailUrl}.io`) || 
+            emailValue.includes(`${emailUrl}.net`) || 
+            emailValue.includes(`${emailUrl}.edu`)
+        ) missingEmailRequirements++; 
         if ( ( emailValue.includes(emailUrl) ) ) {
             return false // this breaks the loop 
         } else if ( idx === emailUrls.length - 1 ) {
@@ -627,5 +635,5 @@ $(() => {  // this is the same as $('document').ready(function() { ... })
     pageLayout();  
     form(); 
     pageTable(); 
-    _test_ENV( formValidated ) // test unit for dev purposes 
+    // _test_ENV( formValidated ) // test unit for dev purposes 
 }); 
