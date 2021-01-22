@@ -95,6 +95,12 @@ const btnsCss = labelBtns => {
 } // end of func
 
 const formCss = formLabels => {
+    $('.formTxt').css(
+        {
+            'position': 'relative',
+            'left': '5vw'
+        }
+    )
     $('.fieldCol, .textCol').css( // selects both col and stylize 
         {
             'text-decoration': 'underline', 
