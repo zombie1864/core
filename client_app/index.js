@@ -282,6 +282,7 @@ const deleteEventHandler = () => {
             tableDataGenerator(dataFromDB[1])// generates the rows for the table 
             $('#tableId tr').on('click', rowSelector4Editing); // selects row data from table to populate on form, placed after ajax call IMPORTANT 
             clearInputTxtFields() // clears the input fields after deleting form 
+            clearErrCssMsg() // clears the err msg for nxt session 
         }, 
         error: (errMsg) => {
             $('.id').append(`<div>${errMsg}`)
@@ -330,6 +331,21 @@ const clearInputTxtFields = () => { // clears the input fields
     $.each( formLabels, (idx, formlabel) => {
         $(`#${formlabel}`).val('')  
     })
+}
+
+const clearErrCssMsg = () => {
+    if ( $('#nameError').length > 0 ) {
+        $('.formLabelName').css('background-color', '');
+        $('#nameError').remove();
+    }
+    if ( $('#ageError').length > 0 ) {
+        $('.formLabelAge').css('background-color', '');
+        $('#ageError').remove();
+    }
+    if ($('#emailError').length > 0 ) {
+        $('.formLabelEmail').css('background-color', '');
+        $('#emailError').remove();
+    }
 }
 
 const seedDB = [ // seeds the db with some dummy data  
@@ -434,7 +450,8 @@ const tableDataGenerator = (dataFromDB) => { // data is [ {}, {}, {} ]
     });
 }
 
-const rowSelector4Editing = event => { // deals w. the logic if populating the text field 
+const rowSelector4Editing = event => { // deals w. the logic if populating the text field
+    clearErrCssMsg() // clears err msg for nxt session 
     let trIdValue = $(event.target).closest('tr').attr('id') // returns the id from tr 
     let tdClassId = $(`.id${parseInt(trIdValue) + 1}`).html() // returns the id from td 
     dataIDFromDB = tdClassId
