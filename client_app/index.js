@@ -95,6 +95,12 @@ const btnsCss = labelBtns => {
 } // end of func
 
 const formCss = formLabels => {
+    $('.formTxt').css(
+        {
+            'position': 'relative',
+            'left': '5vw'
+        }
+    )
     $('.fieldCol, .textCol').css( // selects both col and stylize 
         {
             'text-decoration': 'underline', 
@@ -147,17 +153,18 @@ const nameValidation = (nameValue) => { // only handles returning a boolean
 } // end of func
 
 const nameValidationCSSErr = (nameValue, result) => { // handles the UI CSS layer 
-    if ( $('#nameError').length > 0 ) { // used as a skipping mechanism to go to nxt if block 
+    if ( $('#nameError').length > 0 && nameValue === '') { // ensures name validation regardless of how many attempts to submit 
+        return result = false ;
     } else if ( nameValue === '' ) {
         $('.Name').append(`<p id="${errorTypes[0]}">Please input a name</p>`)
-        errorMsgCss(errorTypes[0], 'formLabelName')
-        result = false; 
-        return result; // used for boolean value for validation before post API req 
+        errorMsgCss(errorTypes[0], 'formLabelName') 
+        return result = false; // used for boolean value for validation before post API req 
     }
-    
     $.each(emailUrls, (idx, emailUrl) => {
         let emailUrlIdx = nameValue.indexOf(emailUrl)
-        if (emailUrlIdx !== -1) {
+        if (nameValue.includes(emailUrl) && $('#nameError').length > 0) {
+            return result = false 
+        } else if (emailUrlIdx !== -1) {
             $('.Name').append('<p id="nameError">Please input a name</p>')
             errorMsgCss(errorTypes[0], 'formLabelName')
             return result = false // if emailUrl found this breaks the loop and returns false
@@ -172,7 +179,8 @@ const nameValidationCSSErr = (nameValue, result) => { // handles the UI CSS laye
 const ageValidation = (ageValue) => { 
     let result = true; 
     let onlyNumbers = /^[0-9]+$/ 
-    if ( $('#ageError').length > 0 ) { // used as a skipping mechanism to go to nxt if block 
+    if ( $('#ageError').length > 0 && !onlyNumbers.test( ageValue )) { // ensures age validation regardless of how many attempts to submit
+        result = false 
     } else if (!onlyNumbers.test( ageValue )) { // validation for age 
         $('.Age').append(`<p id="${errorTypes[1]}">Please input only numbers for your age`)
         errorMsgCss(errorTypes[1], 'formLabelAge')
@@ -182,7 +190,6 @@ const ageValidation = (ageValue) => {
         $('.formLabelAge').css('background-color', '');
         $('#ageError').remove();
     }
-
     return result 
 } // end of func
 
@@ -203,7 +210,7 @@ const emailValidation = (emailValue) => {
 const invalidEmailAddress = (emailValue) => {
     let missingEmailRequirements = 0; 
 
-    if ( emailValue.indexOf('@') === -1  ) missingEmailRequirements++; 
+    if ( emailValue.indexOf('@') === -1  || emailValue.indexOf('@') === 0) missingEmailRequirements++; 
 
     $.each(emailUrls, (idx, emailUrl) => {
         if ( emailValue.includes(`@${emailUrl}`) ) missingEmailRequirements++; 
@@ -281,6 +288,7 @@ const deleteEventHandler = () => {
             tableDataGenerator(dataFromDB[1])// generates the rows for the table 
             $('#tableId tr').on('click', rowSelector4Editing); // selects row data from table to populate on form, placed after ajax call IMPORTANT 
             clearInputTxtFields() // clears the input fields after deleting form 
+            clearErrCssMsg() // clears the err msg for nxt session 
         }, 
         error: (errMsg) => {
             $('.id').append(`<div>${errMsg}`)
@@ -329,6 +337,21 @@ const clearInputTxtFields = () => { // clears the input fields
     $.each( formLabels, (idx, formlabel) => {
         $(`#${formlabel}`).val('')  
     })
+}
+
+const clearErrCssMsg = () => {
+    if ( $('#nameError').length > 0 ) {
+        $('.formLabelName').css('background-color', '');
+        $('#nameError').remove();
+    }
+    if ( $('#ageError').length > 0 ) {
+        $('.formLabelAge').css('background-color', '');
+        $('#ageError').remove();
+    }
+    if ($('#emailError').length > 0 ) {
+        $('.formLabelEmail').css('background-color', '');
+        $('#emailError').remove();
+    }
 }
 
 const seedDB = [ // seeds the db with some dummy data  
@@ -433,7 +456,8 @@ const tableDataGenerator = (dataFromDB) => { // data is [ {}, {}, {} ]
     });
 }
 
-const rowSelector4Editing = event => { // deals w. the logic if populating the text field 
+const rowSelector4Editing = event => { // deals w. the logic if populating the text field
+    clearErrCssMsg() // clears err msg for nxt session 
     let trIdValue = $(event.target).closest('tr').attr('id') // returns the id from tr 
     let tdClassId = $(`.id${parseInt(trIdValue) + 1}`).html() // returns the id from td 
     dataIDFromDB = tdClassId
@@ -525,6 +549,13 @@ const testCases = {
             "Gender" : '1'
         }, // false 
         {
+            "Name" : '.comkarl', //---nameValidation failed---
+            "Age" : '12', 
+            "Email" : '@karl.io', // ---emailValidation failed---
+            "Feedback" : 'lama', 
+            "Gender" : '1'
+        }, // false 
+        {
             "Name" : 'spongbob', 
             "Age" : '22', 
             "Email" : 'wer23@.com', // ---emailValidation failed--- 
@@ -537,9 +568,16 @@ const testCases = {
             'Email': 'pat@underRock.edu', 
             'Feedback': 'My mind is an egima!', 
             'Gender': '2'
-        }
+        },
+        {
+            "Name" : 'karl.com', //---nameValidation failed---
+            "Age" : '12karl', // ---ageValidation failed---
+            "Email" : 'karl@nick.com', 
+            "Feedback" : 'lamas Jimmy!', 
+            "Gender" : '1'
+        }, // false 
     ],
-    'output': [ false, true, false, false, true ] // predicted outcomes  
+    'output': [ false, true, false, false, false, true, false ] // predicted outcomes  
 }
 
 const _test_ENV = method => { // test ENV free from UI layer
@@ -553,22 +591,30 @@ const _test_ENV = method => { // test ENV free from UI layer
             console.log(inputObj, `predicted outcomes are: [ ${arrOfOutputs} ]\
             at index, idx = ${idx} the method\ 
             ${err}`);
+        } finally {
+            clearErrCssMsg() // clears err msg for nxt session 
         }
         // passes the inputObj for a second time for the aux func 
         try { // aux func are tested, if err - gives helpful msg of failure 
             if (nameValidation(inputObj.Name) !== true ) throw '---nameValidation failed---'
         } catch (err) {
             console.log(err);
+        } finally {
+            clearErrCssMsg() // clears err msg for nxt session 
         }
         try { // aux func are tested, if err - gives helpful msg of failure 
             if (emailValidation(inputObj.Email) !== true ) throw '---emailValidation failed---'
         } catch (err) {
             console.log(err);
+        } finally {
+            clearErrCssMsg() // clears err msg for nxt session 
         }
         try { // aux func are tested, if err - gives helpful msg of failure 
             if (ageValidation(inputObj.Age) !== true ) throw '---ageValidation failed---'
         } catch (err) {
             console.log(err);
+        } finally {
+            clearErrCssMsg() // clears err msg for nxt session 
         }
     })
 
@@ -581,5 +627,5 @@ $(() => {  // this is the same as $('document').ready(function() { ... })
     pageLayout();  
     form(); 
     pageTable(); 
-    // _test_ENV( formValidated ) // test unit for dev purposes 
+    _test_ENV( formValidated ) // test unit for dev purposes 
 }); 
