@@ -14,6 +14,7 @@ The purpose of this assignment:
     ⮑ HTTP res 
         ⮑ backend sends data 
     ⮑ seralization 
+    ⮑ mvc pattern 
 
 [] Unit testing 
     ⮑ independent from UI layer 
