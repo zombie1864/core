@@ -3,6 +3,7 @@ import {rowSelector4Editing, addEventHandler, editEventHandler, clearErrCssMsg, 
 import { tableDataGenerator } from './pageTable'
 import {tableTag, dataIDFromDB, webUrl} from './globalConst'
 
+
 export const addEventBtns = () => {
     const labelBtns = ['Add', 'Edit', 'Delete', 'Demo']
 
@@ -31,7 +32,8 @@ export const addEventBtns = () => {
                 _btnsCss(labelBtns)
         }
     })
-} // end of func
+} 
+
 
 const _textFieldData = (labelBtnID) => { // creates the data obj from input for adding or editing 
     let textFieldDataObj = { // graps the data from the text fields 
@@ -48,7 +50,8 @@ const _textFieldData = (labelBtnID) => { // creates the data obj from input for 
         case 'Edit':
             editEventHandler(textFieldDataObj)
     }
-} // end of func 
+} 
+
 
 const _deleteEventHandler = () => {
     $.ajax({
@@ -65,7 +68,7 @@ const _deleteEventHandler = () => {
             $('.id').append(`<div>${errMsg}`)
         }
     })
-} // end of func 
+} 
 
 
 const _demoEventHandler = () => { // iterates seedDB, each obj is sent via post api 
@@ -92,9 +95,10 @@ const _demoEventHandler = () => { // iterates seedDB, each obj is sent via post 
             }
         })
     }) 
-} // end of func 
+} 
 
-const _btnsCss = labelBtns => {
+
+const _btnsCss = labelBtns => { // NOTE css isolation is needed 
     $.each(labelBtns, ( _, labelBtn) => {
         $(`#${labelBtn}`).css(
             {
@@ -114,9 +118,9 @@ const _btnsCss = labelBtns => {
             }
         )
     })
-} // end of func
+} 
 
-const seedDB = [ // seeds the db with some dummy data  
+const seedDB = [ // seeds the db with some dummy data  NOTE this needs to be in globalConst
     {
         'Age': '27', 
         'Email': "jeff@gmail.com",

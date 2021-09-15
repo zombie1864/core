@@ -9,13 +9,15 @@ export const form = () => {
     _formHeaders(formColNameClasses, tableHeaders) // gives each col a category name 
     _formFields(formLabels, inputPlaceHolders) // gives form table, row and td tags  
     _formCss(formLabels) // stylizes the form
-} // end of func 
+} 
+
 
 const _formHeaders = (formColNameClasses, tableHeaders) => {
     $.each(tableHeaders, (idx, tableHeader) => {
         $('.form').append(`<th class="${formColNameClasses[idx]}">${tableHeader}`)
     })
-} // end of func
+} 
+
 
 const _formFields = (formLabels, inputPlaceHolders) => {
     $.each(formLabels, (rowIndex, formLabel) => {
@@ -31,10 +33,10 @@ const _formFields = (formLabels, inputPlaceHolders) => {
         $('.form').append(rowForm);
     });
     $('#GenderOptions').append('<option value = "0">Female', '<option  value = "1">Male', '<option value = "2">Other')
-} // end of func
+} 
 
 
-const _formCss = formLabels => {
+const _formCss = formLabels => { // NOTE css isolation is needed 
     $('.formTxt').css(
         {
             'position': 'relative',
@@ -60,7 +62,5 @@ const _formCss = formLabels => {
         )
     })
     $('table th.form').css('border-spacing', '25px')
-} // end of func
-
-
+} 
 
