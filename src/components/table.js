@@ -1,5 +1,5 @@
 import {rowSelector4Editing} from './selectors'
-import {webUrl, tableTag} from './globalConst'
+import {webUrl, tableTag} from '../utils/globalConst'
 
 let rowID = null // each row on table has an ID
 

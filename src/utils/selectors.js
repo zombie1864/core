@@ -1,6 +1,6 @@
 import {tableGeneratorFunc, tableDataGenerator} from './pageTable'
-import {formValidated} from './validators'
-import {webUrl, tableTag, dataIDFromDB, formLabels} from './globalConst'
+import {formValidated} from '../utils/validators'
+import {webUrl, tableTag, dataIDFromDB, formLabels} from '../utils/globalConst'
 
 let currRowToggle = null // NOTE these need to be isolated into globalConst
 let prevRowToggle = null // NOTE these need to be isolated into globalConst

@@ -1,7 +1,7 @@
-import {tableGeneratorFunc} from './pageTable'
+import {tableGeneratorFunc} from './table'
 import {rowSelector4Editing, addEventHandler, editEventHandler, clearErrCssMsg, clearInputTxtFields} from './selectors'
-import { tableDataGenerator } from './pageTable'
-import {tableTag, dataIDFromDB, webUrl} from './globalConst'
+import { tableDataGenerator } from './table'
+import {tableTag, dataIDFromDB, webUrl} from '../utils/globalConst'
 
 
 export const addEventBtns = () => {

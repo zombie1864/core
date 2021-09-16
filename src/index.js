@@ -1,7 +1,7 @@
 import {pageLayout} from './components/pageLayout'
 import {form} from './components/form'
 import {addEventBtns} from './components/btns'
-import { pageTable } from './components/pageTable'
+import { pageTable } from './components/table'
 
 
 $(() => {  // this is the same as $('document').ready(function() { ... })

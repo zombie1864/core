@@ -1,4 +1,5 @@
-import {formLabels} from './globalConst'
+import {formLabels} from '../utils/globalConst'
+import{formCss} from '../css/jqueryCss'
 
 export const form = () => { 
     /**
@@ -11,7 +12,7 @@ export const form = () => {
     $('.form').append('<p class="formTxt">Form')
     _formHeaders(formClassNameAttr, formHeaderLabels) // gives each col a category name 
     _formFields(formLabels, inputPlaceHolders) // gives form table, row and td tags  
-    _formCss(formLabels) // stylizes the form NOTE this needs to be isolated in css somehow 
+    formCss(formLabels) 
 } 
 
 
@@ -43,34 +44,5 @@ const _formFields = (formLabels, inputPlaceHolders) => {
         $('.form').append(rowForm);
     });
     $('#GenderOptions').append('<option value = "0">Female', '<option  value = "1">Male', '<option value = "2">Other')
-} 
-
-
-const _formCss = formLabels => { // NOTE css isolation is needed 
-    $('.formTxt').css(
-        {
-            'position': 'relative',
-            'left': '5vw'
-        }
-    )
-    $('.fieldCol, .textCol').css( // selects both col and stylize 
-        {
-            'text-decoration': 'underline', 
-            'font-style': 'italic',
-            'color': 'green',
-            'padding': '5px 10px',
-            'position': 'relative', 
-            'left': '10vw', 
-        }
-    );
-    $.each(formLabels, (_, formLabel) => {
-        $(`#${formLabel}, #GenderOptions, .formLabel${formLabel[0].toUpperCase()+ formLabel.slice(1,formLabel.length)}`).css(
-            {
-                'position': 'relative', 
-                'left': '10vw',     
-            }
-        )
-    })
-    $('table th.form').css('border-spacing', '25px')
 } 
 
