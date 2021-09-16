@@ -1,7 +1,8 @@
-import {tableGeneratorFunc, tableDataGenerator} from '../components/table'
+import {generateTableUsing, tableDataGenerator} from '../components/table'
 import {tableTag, dataIDFromDB, webUrl} from './globalConst'
 import {seedDB} from './globalConst'
 import {clearErrCssMsg,clearInputTxtFields, rowSelector4Editing} from './selectors'
+import {formValidated} from './validators'
 
 
 export const addEventHandler = (textFieldDataObj) => {
@@ -68,7 +69,7 @@ export const demoEventHandler = () => { // iterates seedDB, each obj is sent via
                 $.get(webUrl, (dataFromDB) => {
                     if ( $('.table').find('tr').length === 0 ) {
                         $('.noData2').remove()
-                        tableGeneratorFunc(dataFromDB, tableTag)
+                        generateTableUsing(dataFromDB, tableTag)
                     } else {
                         $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
                         tableDataGenerator(dataFromDB) // generates the rows for the table 
@@ -88,7 +89,7 @@ export const demoEventHandler = () => { // iterates seedDB, each obj is sent via
 const _tableRefresh = dataFromDB => { // refreshes comp without refresh to the entire DOM 
     if ( $('.table').find('tr').length === 0 ) { // no td -> generate the table
         $('.noData2').remove()
-        tableGeneratorFunc(dataFromDB[1], tableTag)
+        generateTableUsing(dataFromDB[1], tableTag)
     } else {
         $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
         tableDataGenerator(dataFromDB[1]) // generates the rows for the table 

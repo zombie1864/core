@@ -1,6 +1,4 @@
-import {tableGeneratorFunc, tableDataGenerator} from '../components/table'
-import {formValidated} from '../utils/validators'
-import {webUrl, tableTag, dataIDFromDB, formLabels} from '../utils/globalConst'
+import {dataIDFromDB, formLabels} from '../utils/globalConst'
 
 let currRowToggle = null // NOTE these need to be isolated into globalConst
 let prevRowToggle = null // NOTE these need to be isolated into globalConst 

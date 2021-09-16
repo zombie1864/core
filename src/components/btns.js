@@ -25,19 +25,6 @@ export const eventBtns = () => {
                 demoEventHandler()
         }
     })
-    /**
-        RFE 
-        The following code might not be needed - look for another way to control your css 
-        $(document).ajaxComplete( () => { // determines the css style for btns after ajax call 
-            let lengthOfTable = $('#tableId tr').length
-            switch (lengthOfTable) {
-                default: 
-                    _btnsCss(btnLabels)
-            }
-        })
-        NOTE 
-            The issue at hand is that the table CHANGES size depending on the length of either name, email, etc. A possible fix to this problem would be to have the table comp be of a fixed size so that it does not change, either the table is fixed or the `th` tag for the table comp is fixed. 
-    **/
 } 
 
 
@@ -62,3 +49,6 @@ const _textFieldData = (btnLabelID) => {
     }
 } 
 
+/**
+   RVD 9/16/21   
+**/
