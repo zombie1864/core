@@ -1,9 +1,9 @@
-import {rowSelector4Editing} from './selectors'
+import {rowSelector4Editing} from '../utils/selectors'
 import {webUrl, tableTag} from '../utils/globalConst'
 
 let rowID = null // each row on table has an ID
 
-export const pageTable = () => { // table that deals with [{}, {}, {}] DS with each obj being a row 
+export const table = () => { // table that deals with [{}, {}, {}] DS with each obj being a row 
     $.ajax({
         type: 'GET', 
         url: webUrl, 

@@ -1,15 +1,25 @@
 import {tableGeneratorFunc} from './table'
-import {rowSelector4Editing, addEventHandler, editEventHandler, clearErrCssMsg, clearInputTxtFields} from './selectors'
+import {
+    rowSelector4Editing, 
+    addEventHandler, 
+    editEventHandler, 
+    clearErrCssMsg, 
+    clearInputTxtFields
+} from '../utils/selectors'
 import { tableDataGenerator } from './table'
 import {tableTag, dataIDFromDB, webUrl} from '../utils/globalConst'
 
 
-export const addEventBtns = () => {
-    const labelBtns = ['Add', 'Edit', 'Delete', 'Demo']
+export const eventBtns = () => {
+    /**
+    @description: comp which adds btns to page which each btn containing additional functionality and some like 'Add' passing props down to functional pipelines. 
+    **/
+    const btnLabels = ['Add', 'Edit', 'Delete', 'Demo']
 
-    $.each(labelBtns, (_, labelBtn) => {
-        $('.form').append(`<input type="submit" value="${labelBtn}" id="${labelBtn}">`)
+    $.each(btnLabels, (_, btnLabel) => {
+        $('.form').append(`<input type="submit" value="${btnLabel}" id="${btnLabel}">`)
     })
+    _btnsCss(btnLabels)
     $('#Add, #Edit, #Delete, #Demo').on('click', function() {
         switch(this.id) {
             case 'Add':
@@ -25,17 +35,23 @@ export const addEventBtns = () => {
                 _demoEventHandler()
         }
     })
-    $( document ).ajaxComplete( () => { // determines the css style for btns after ajax call 
-        let lengthOfTable = $('#tableId tr').length
-        switch (lengthOfTable) {
-            default: 
-                _btnsCss(labelBtns)
-        }
-    })
+    /**
+        RFE 
+        The following code might not be needed - look for another way to control your css 
+        $(document).ajaxComplete( () => { // determines the css style for btns after ajax call 
+            let lengthOfTable = $('#tableId tr').length
+            switch (lengthOfTable) {
+                default: 
+                    _btnsCss(btnLabels)
+            }
+        })
+        NOTE 
+            The issue at hand is that the table CHANGES size depending on the length of either name, email, etc. A possible fix to this problem would be to have the table comp be of a fixed size so that it does not change, either the table is fixed or the `th` tag for the table comp is fixed. 
+    **/
 } 
 
 
-const _textFieldData = (labelBtnID) => { // creates the data obj from input for adding or editing 
+const _textFieldData = (btnLabelID) => { // creates the data obj from input for adding or editing 
     let textFieldDataObj = { // graps the data from the text fields 
         "Name":$('#Name').val(), 
         "Age":$('#Age').val(), 
@@ -43,7 +59,7 @@ const _textFieldData = (labelBtnID) => { // creates the data obj from input for 
         "Feedback":$('#Feedback').val(),
         "Gender":$('#GenderOptions option:selected').val() 
     }
-    switch(labelBtnID) { // based on ID data obj will be added or edited 
+    switch(btnLabelID) { // based on ID data obj will be added or edited 
         case 'Add':
             addEventHandler(textFieldDataObj)
             break
@@ -98,9 +114,9 @@ const _demoEventHandler = () => { // iterates seedDB, each obj is sent via post 
 } 
 
 
-const _btnsCss = labelBtns => { // NOTE css isolation is needed 
-    $.each(labelBtns, ( _, labelBtn) => {
-        $(`#${labelBtn}`).css(
+const _btnsCss = btnLabels => { // NOTE css isolation is needed 
+    $.each(btnLabels, ( _, btnLabel) => {
+        $(`#${btnLabel}`).css(
             {
                 'background-color': '#4CAF50',
                 'border-radius': '10px',

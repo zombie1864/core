@@ -1,4 +1,4 @@
-import {tableGeneratorFunc, tableDataGenerator} from './pageTable'
+import {tableGeneratorFunc, tableDataGenerator} from '../components/table'
 import {formValidated} from '../utils/validators'
 import {webUrl, tableTag, dataIDFromDB, formLabels} from '../utils/globalConst'
 

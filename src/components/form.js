@@ -46,3 +46,6 @@ const _formFields = (formLabels, inputPlaceHolders) => {
     $('#GenderOptions').append('<option value = "0">Female', '<option  value = "1">Male', '<option value = "2">Other')
 } 
 
+/**
+    RVD : reviewed on 9/16/21 
+**/
