@@ -1,6 +1,6 @@
 import {rowSelector4Editing} from '../utils/selectors'
 import {webUrl, tableTag} from '../utils/globalConst'
-import {emptyDB_CSS, stylizeCols} from '../css/jqueryCss'
+import {emptyDB_CSS, stylizeCols} from '../style/jqueryCss'
 
 
 export const table = () => { 
