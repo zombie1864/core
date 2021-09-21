@@ -58,7 +58,6 @@ export const pageLayoutCss = () => {
     
     $('#layoutTable').css(
         {
-            // 'border-style': 'solid', 
             'padding': '10px', 
         }
     )
@@ -68,16 +67,14 @@ export const pageLayoutCss = () => {
             'width': '100vw', 
             'max-width': '550px',
             // 'border-style': 'solid', 
-            // 'color' : 'red',
         }
     )
 
     $('#layoutTable th.table').css(
         {
         'max-width': '400px',
-        'border-style': 'solid', 
+        'border-style': 'solid', // NOTE when there is no data this should not be active when there is data then this should be activated 
         'position': 'relative', 
-        // 'left': '200px'
         }
     )
 } 

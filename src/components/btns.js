@@ -1,5 +1,5 @@
 import {addEventHandler, editEventHandler, deleteEventHandler, demoEventHandler} from '../utils/eventHandlers'
-import {btnsCss} from '../css/jqueryCss'
+import {btnsCss} from '../style/jqueryCss'
 
 export const eventBtns = () => {
     /**

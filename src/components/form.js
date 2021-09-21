@@ -1,5 +1,5 @@
 import {formLabels} from '../utils/globalConst'
-import{formCss} from '../css/jqueryCss'
+import{formCss} from '../style/jqueryCss'
 
 export const form = () => { 
     /**

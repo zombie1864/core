@@ -1,4 +1,4 @@
-import {pageLayoutCss} from '../css/jqueryCss'
+import {pageLayoutCss} from '../style/jqueryCss'
 
 export const pageLayout = () => { 
     /**
