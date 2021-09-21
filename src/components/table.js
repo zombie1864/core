@@ -1,23 +1,24 @@
 import {rowSelector4Editing} from '../utils/selectors'
 import {webUrl, tableTag} from '../utils/globalConst'
-import {emptyDB_CSS, stylizeCols} from '../style/jqueryCss'
+import {tableCss, stylizeCols} from '../style/jqueryCss'
 
 
 export const table = () => { 
     /**
     @description: table comp, which makes an ajax after mounted on the DOM. See dev notes for details 
     **/
-    $('.table').append(tableTag)
     $.ajax({ 
         type: 'GET', 
         url: webUrl, 
         success: dataFromDB => { // data from db, [{},{},{}] DS, each object is a row 
             if (dataFromDB.length === 0) {
-                emptyDB_CSS(tableTag)
+                $('#layoutTable').append('<p>No Data</P>')
             } else {
-                tableTag.remove('.noData')
+                $('.table').append(tableTag)
+                $('#layoutTable').remove('.noData')
                 generateTableUsing(dataFromDB, tableTag)
                 $('#tableId tr').on('click', rowSelector4Editing); // NOTE ajax is async, see dev notes
+                tableCss()
             }            
         }
     })
