@@ -6,7 +6,7 @@ export const pageLayout = () => {
     **/
     $('.id').append('<table id="layoutTable"/>')
     const th1 = $('<th class="form">');// This is a `th` tag - comps are appended to table 
-    const th2 = $('<th class="table">');
+    const th2 = $('<th class="table">'); 
     $('#layoutTable').append(th1,th2)
     pageLayoutCss(); 
 } 

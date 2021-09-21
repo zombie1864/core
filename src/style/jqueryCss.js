@@ -66,29 +66,17 @@ export const pageLayoutCss = () => {
         {
             'width': '100vw', 
             'max-width': '550px',
-            // 'border-style': 'solid', 
-        }
-    )
-
-    $('#layoutTable th.table').css(
-        {
-        'max-width': '400px',
-        'border-style': 'solid', // NOTE when there is no data this should not be active when there is data then this should be activated 
-        'position': 'relative', 
         }
     )
 } 
 
-export const emptyDB_CSS = tableTag => {
-    tableTag.append('<p class="noData">No data').css(
+
+export const tableCss = () => {
+    $('#layoutTable th.table').css(
         {
-            'display': 'block'
-        }
-    )
-    $('.table').css(
-        {
-            'position': 'relative', 
-            'left': '200px'
+        'max-width': '400px',
+        'border-style': 'solid', 
+        'position': 'relative', 
         }
     )
 }
