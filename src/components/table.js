@@ -61,7 +61,7 @@ const _generateColNameFor = (dataFromDB, tableTag) => {
     @param {Array[Object]} dataFromDB: list of dict obj containg data pulled from DB via ajax resp 
     @param {JqueryObject} tableTag: An HTML `table` tag 
     **/
-    tableTag.append('Table').css('display', 'block') // no obj if there is only one key-value pair 
+    tableTag.append('<span class="tableContentTitle">Table</span>').css('display', 'inline-block') // no obj if there is only one key-value pair 
     $.each(Object.keys(dataFromDB[0]), (_, key) => { /// gives the keys from obj 
         tableTag.append(`<th class="colName">${key}`) // gives each col a category name 
     })
