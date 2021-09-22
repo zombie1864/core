@@ -12,8 +12,8 @@ export const addEventHandler = (textFieldDataObj) => {
             type: 'POST', 
             url: webUrl,  
             data: textFieldDataObj, // { ... } single obj added to [ {}, {}, ..., {}]
-            success: dataFromDB => {
-                _tableRefresh(dataFromDB) // refreshes the table 
+            success: () => {
+                _tableRefresh() // refreshes the table 
                 clearInputTxtFields() // clears the input fields after adding form 
             }, 
             error: (errMsg) => {
@@ -30,8 +30,8 @@ export const editEventHandler = (textFieldDataObj) => {
             type: 'PUT', 
             url: `${webUrl + '/' + dataIDFromDB}`, 
             data: textFieldDataObj, 
-            success: dataFromDB => {
-                _tableRefresh(dataFromDB)
+            success: () => {
+                _tableRefresh()
                 clearInputTxtFields() // clears the input fields after editing form
             },
             error: (errMsg) => {
@@ -78,21 +78,19 @@ export const demoEventHandler = () => { // iterates seedDB, each obj is sent via
                 $('.noData').remove()
                 let tableCompExists = $('#layoutTable th.table').length // 1 === DE 0 === DNE 
                 let tableContentExists = $('#tableContent').length
-                if (tableCompExists === 1 && tableContentExists === 0) {
+                if (
+                    (tableCompExists === 1 && tableContentExists === 0) ||
+                    (tableCompExists === 0 && tableContentExists === 0)
+                ) {
+                    if (tableContentExists === 0 && tableCompExists === 0) $('#layoutTable').append('<th class="table">')
                     $('.table').append(tableTag)
                     generateTableUsing(dataFromDB[0], tableTag)
                     $('#tableContent tr').on('click', rowSelector4Editing);
+                    tableCss()
                 } 
                 else if (tableCompExists === 1 && tableContentExists == 1) {
                     addTableData(dataFromDB[0])
                 }
-                else {
-                    $('#layoutTable').append('<th class="table">')
-                    $('.table').append(tableTag)
-                    addTableData(dataFromDB[0])
-                    $('#tableContent tr').on('click', rowSelector4Editing);
-                }
-                tableCss()
             }, 
             error: (errMsg) => {
                 $('.id').append(`<div>${errMsg}`)
@@ -102,56 +100,36 @@ export const demoEventHandler = () => { // iterates seedDB, each obj is sent via
 } 
 
 
-const _tableRefresh = dataFromDB => { 
+const _tableRefresh = () => { 
     // NOTE NOT 100% TRUE: refreshes comp without refresh to the entire DOM <- update note later
     let tableContentExists = $('#tableContent').length
     let tableCompExists = $('#layoutTable th.table').length // 1 === DE 0 === DNE 
-    console.log('\n----------[ START ]----------\n')
-    console.log(`tableCompExists: ${tableCompExists}`)
-    console.log(`tableContentExists: ${tableContentExists}`)
-    console.log(`both: ${tableCompExists === tableContentExists}`)
-    console.log('\n----------[ END ]----------\n') 
-
-    if (tableContentExists === 0 && tableCompExists === 0) {
-        $('#layoutTable').append('<th class="table">')
-    }
-
-    if (tableCompExists === 1 && tableContentExists === 0) {
+    if (
+        (tableCompExists === 1 && tableContentExists === 0) ||
+        (tableCompExists === 0 && tableContentExists === 0)
+    ) {
+        if (tableContentExists === 0 && tableCompExists === 0) $('#layoutTable').append('<th class="table">')
         $('.noData').remove()
         $.ajax({ 
             type: 'GET', 
             url: webUrl, 
-            success: dataFromDB => { // data from db, [{},{},{}] DS, each object is a row 
+            success: dataFromDB => { 
                 $('#layoutTable').remove('.noData')
                 $('.table').append(tableTag)
                 generateTableUsing(dataFromDB, tableTag)
-                $('#tableContent tr').on('click', rowSelector4Editing); // NOTE ajax is async, see dev notes
-                $('#tableContent tr').on('click', rowSelector4Editing); // selects row data from table to populate on form, placed after ajax call IMPORTANT 
+                $('#tableContent tr').on('click', rowSelector4Editing); 
                 tableCss()
             }
         })
-    } else if (tableContentExists === 0 && tableCompExists === 0) {
-        $('.noData').remove()
-        $('#layoutTable').append('<th class="table">')
-        $.ajax({ 
-            type: 'GET', 
-            url: webUrl, 
-            success: dataFromDB => { // data from db, [{},{},{}] DS, each object is a row 
-                $('#layoutTable').remove('.noData')
-                $('.table').append(tableTag)
-                generateTableUsing(dataFromDB, tableTag)
-                $('#tableContent tr').on('click', rowSelector4Editing); // NOTE ajax is async, see dev notes
-                tableCss()
-            }
-        })
-    } else {
+    } 
+    else if (tableCompExists === 1 && tableContentExists == 1) {
         $('tr').remove('.dataElFromDB') 
         $.ajax({ 
             type: 'GET', 
             url: webUrl, 
-            success: dataFromDB => { // data from db, [{},{},{}] DS, each object is a row
+            success: dataFromDB => { 
                 addTableData(dataFromDB) 
-                $('#tableContent tr').on('click', rowSelector4Editing); // selects row data from table to populate on form, placed after ajax call IMPORTANT 
+                $('#tableContent tr').on('click', rowSelector4Editing); 
             }
         })
     }

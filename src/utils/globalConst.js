@@ -11,25 +11,25 @@ export const seedDB = [ // seeds the db with some dummy data
         'Gender': '0',
         'Name': "jeff"
     }, 
-    {
-        'Age': '25', 
-        'Email': "jessie@gmail.com",
-        'Feedback': "demo test again",
-        'Gender': '1',
-        'Name': "jessie"
-    }, 
-    {
-        'Age': '29', 
-        'Email': "mark@gmail.com",
-        'Feedback': "mark's demo",
-        'Gender': '0',
-        'Name': "mark"
-    }, 
-    {
-        'Age': '22', 
-        'Email': "amy@gmail.com",
-        'Feedback': "a-demo-trick",
-        'Gender': '1',
-        'Name': "amy"
-    }
+    // {
+    //     'Age': '25', 
+    //     'Email': "jessie@gmail.com",
+    //     'Feedback': "demo test again",
+    //     'Gender': '1',
+    //     'Name': "jessie"
+    // }, 
+    // {
+    //     'Age': '29', 
+    //     'Email': "mark@gmail.com",
+    //     'Feedback': "mark's demo",
+    //     'Gender': '0',
+    //     'Name': "mark"
+    // }, 
+    // {
+    //     'Age': '22', 
+    //     'Email': "amy@gmail.com",
+    //     'Feedback': "a-demo-trick",
+    //     'Gender': '1',
+    //     'Name': "amy"
+    // }
 ]
