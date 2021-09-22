@@ -17,7 +17,7 @@ export const table = () => {
                 $('#layoutTable').remove('.noData')
                 $('.table').append(tableTag)
                 generateTableUsing(dataFromDB, tableTag)
-                $('#tableId tr').on('click', rowSelector4Editing); // NOTE ajax is async, see dev notes
+                $('#tableContent tr').on('click', rowSelector4Editing); // NOTE ajax is async, see dev notes
                 tableCss()
             }            
         }
@@ -32,11 +32,11 @@ export const generateTableUsing = (dataFromDB, tableTag) => {
     @param {JqueryObject} tableTag: An HTML `table` tag 
     **/
     _generateColNameFor(dataFromDB, tableTag) // generates the colNames for the table 
-    tableDataGenerator(dataFromDB) // generates the data that is display to the table 
+    addTableData(dataFromDB) // generates the data that is display to the table 
 } //NOTE dataFromDB is not Array[Object] it is Array[Array[Object]]
 
 
-export const tableDataGenerator = (dataFromDB) => { 
+export const addTableData = (dataFromDB) => { 
     /**
     @description: Generates data on table taken from HTTP resp from server 
     @param {Array[Object]} dataFromDB: data from DB 
@@ -50,7 +50,7 @@ export const tableDataGenerator = (dataFromDB) => {
             );
         });
         rowID++
-        $('#tableId').append(row);
+        $('#tableContent').append(row);
     });
 }
 

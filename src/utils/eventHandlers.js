@@ -1,4 +1,4 @@
-import {generateTableUsing, tableDataGenerator} from '../components/table'
+import {generateTableUsing, addTableData} from '../components/table'
 import {tableTag, dataIDFromDB, webUrl} from './globalConst'
 import {seedDB} from './globalConst'
 import {clearErrCssMsg,clearInputTxtFields, rowSelector4Editing} from './selectors'
@@ -52,8 +52,8 @@ export const deleteEventHandler = () => {
                 $('.table').remove() // rm the table comp
                 $('#layoutTable').append('<p class="noData">No Data</P>')
             } else {
-                tableDataGenerator(dataFromDB[1])// generates the rows for the table 
-                $('#tableId tr').on('click', rowSelector4Editing); // selects row data from table to populate on form, placed after ajax call IMPORTANT 
+                addTableData(dataFromDB[1])// generates the rows for the table 
+                $('#tableContent tr').on('click', rowSelector4Editing); // selects row data from table to populate on form, placed after ajax call IMPORTANT 
             }
             clearInputTxtFields() // clears the input fields after deleting form 
             clearErrCssMsg() // clears the err msg for nxt session 
@@ -65,28 +65,31 @@ export const deleteEventHandler = () => {
 } // RFE note that their is a performance issue with this design - clear all data and rebuild it 
 
 
-export const demoEventHandler = () => { // iterates seedDB, each obj is sent via post api 
-    $.each( seedDB, (_, dataObj) => {
+export const demoEventHandler = () => { // iterates seedDB, each obj is sent via post api
+    $.each(seedDB, (_, dataObj) => {
         $.ajax({
             type: 'POST', 
             url: webUrl,  
-            data: dataObj, 
-            success: (dataFromDB) => {
-                console.log(dataObj);
-                $.get(webUrl, (dataFromDB) => {
-                    console.log(dataFromDB);
-                    if ( $('.table').find('tr').length === 0 ) {
-                        $('.noData').remove()
-                        $('.table').append(tableTag)
-                        generateTableUsing(dataFromDB, tableTag)
-                        tableCss()
-                    } else {
-                        $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
-                        tableDataGenerator(dataFromDB) // generates the rows for the table 
-                    }
-                    clearInputTxtFields()
-                    $('#tableId tr').on('click', rowSelector4Editing); // selects row data from table to populate on form, placed after ajax call IMPORTANT 
-                })            
+            data: dataObj,
+            success: dataFromDB => {
+                $('.noData').remove()
+                let tableCompExists = $('#layoutTable th.table').length // 1 === DE 0 === DNE 
+                let tableContentExists = $('#tableContent').length
+                if (tableCompExists === 1 && tableContentExists === 0) {
+                    $('.table').append(tableTag)
+                    generateTableUsing(dataFromDB[0], tableTag)
+                    $('#tableContent tr').on('click', rowSelector4Editing);
+                } 
+                else if (tableCompExists === 1 && tableContentExists == 1) {
+                    addTableData(dataFromDB[0])
+                }
+                else {
+                    $('#layoutTable').append('<th class="table">')
+                    $('.table').append(tableTag)
+                    addTableData(dataFromDB[0])
+                    $('#tableContent tr').on('click', rowSelector4Editing);
+                }
+                tableCss()
             }, 
             error: (errMsg) => {
                 $('.id').append(`<div>${errMsg}`)
@@ -102,7 +105,7 @@ const _tableRefresh = dataFromDB => { // refreshes comp without refresh to the e
         generateTableUsing(dataFromDB[1], tableTag)
     } else {
         $('tr').remove('.dataElFromDB') // removes all tr with class name dataElFromDB
-        tableDataGenerator(dataFromDB[1]) // generates the rows for the table 
+        addTableData(dataFromDB[1]) // generates the rows for the table 
     }
-    $('#tableId tr').on('click', rowSelector4Editing); // selects row data from table to populate on form, placed after ajax call IMPORTANT 
+    $('#tableContent tr').on('click', rowSelector4Editing); // selects row data from table to populate on form, placed after ajax call IMPORTANT 
 } 
