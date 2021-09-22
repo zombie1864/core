@@ -9,7 +9,7 @@ export const eventBtns = () => {
     $.each(btnLabels, (_, btnLabel) => {
         $('.form').append(`<input type="submit" value="${btnLabel}" id="${btnLabel}">`)
     })
-    btnsCss(btnLabels)
+    btnsCss(btnLabels) // stylize btns 
     $('#Add, #Edit, #Delete, #Demo').on('click', function() {
         switch(this.id) {
             case 'Add':

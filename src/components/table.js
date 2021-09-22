@@ -12,10 +12,10 @@ export const table = () => {
         url: webUrl, 
         success: dataFromDB => { // data from db, [{},{},{}] DS, each object is a row 
             if (dataFromDB.length === 0) {
-                $('#layoutTable').append('<p>No Data</P>')
+                $('#layoutTable').append('<p class="noData">No Data</P>')
             } else {
-                $('.table').append(tableTag)
                 $('#layoutTable').remove('.noData')
+                $('.table').append(tableTag)
                 generateTableUsing(dataFromDB, tableTag)
                 $('#tableId tr').on('click', rowSelector4Editing); // NOTE ajax is async, see dev notes
                 tableCss()
@@ -33,7 +33,7 @@ export const generateTableUsing = (dataFromDB, tableTag) => {
     **/
     _generateColNameFor(dataFromDB, tableTag) // generates the colNames for the table 
     tableDataGenerator(dataFromDB) // generates the data that is display to the table 
-} 
+} //NOTE dataFromDB is not Array[Object] it is Array[Array[Object]]
 
 
 export const tableDataGenerator = (dataFromDB) => { 
@@ -41,10 +41,10 @@ export const tableDataGenerator = (dataFromDB) => {
     @description: Generates data on table taken from HTTP resp from server 
     @param {Array[Object]} dataFromDB: data from DB 
     **/
-    let rowID = 1;
-    $.each(dataFromDB, (rowIdx, dataObj) => {
-        let row = $(`<tr id='${rowIdx}' class="dataElFromDB"/>`); // gives the HTML tr with id attr 
-        $.each(dataObj, (key, val) => { 
+   let rowID = 1;
+   $.each(dataFromDB, (rowIdx, dataObj) => {
+       let row = $(`<tr id='${rowIdx}' class="dataElFromDB"/>`); // gives the HTML tr with id attr 
+       $.each(dataObj, (key, val) => { 
             row.append(
                 $(`<td class='${key + rowID}' />`).text(val) 
             );
